@@ -126,7 +126,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 For questions, suggestions, or feedback, reach out to:  
 
-- **Project Maintainer:** Egba Frank (EgbaFrank.com)  
+- **Project Maintainer:** Egba Frank (EgbaFrank@gmail.com)  
 - **GitHub Repository:** [DailyNutri](https://github.com/EgbaFrank/DailyNutri)  
 
 We appreciate your support and look forward to collaborating with you!  
