@@ -112,7 +112,7 @@ Refer to our [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 - Portion sizes are estimated and may require user refinement.  
 - Mobile responsiveness needs additional optimization.  
 
-Please report issues in the [GitHub Issues section](https://github.com/your-username/DailyNutri/issues).  
+Please report issues in the [GitHub Issues section](https://github.com/EgbaFrank/DailyNutri/issues).  
 
 ---
 
@@ -126,7 +126,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 For questions, suggestions, or feedback, reach out to:  
 
-- **Project Maintainer:** Your Name (your.email@example.com)  
-- **GitHub Repository:** [DailyNutri](https://github.com/your-username/DailyNutri)  
+- **Project Maintainer:** Egba Frank (EgbaFrank.com)  
+- **GitHub Repository:** [DailyNutri](https://github.com/EgbaFrank/DailyNutri)  
 
 We appreciate your support and look forward to collaborating with you!  
