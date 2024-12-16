@@ -13,8 +13,12 @@ const userSchema = new mongoose.Schema({
     match: [/\S+@\S+\.\S+/, 'Please enter a valid email address'],
   },
   password: { type: String, required: true },
-  age: { type: Number },
+  age: { type: Number, min: 0 },
   gender: { type: String },
+  preferences: {
+    vegetarian: { type: Boolean, default: false },
+    allergies: { type: [String], default: [] },
+  },
 }, { timestamps: true });
 
 userSchema.pre('save', async (next) => {
@@ -24,5 +28,9 @@ userSchema.pre('save', async (next) => {
   }
   next();
 });
+
+userSchema.methods.comparePassword = async function comparePassword(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 export default mongoose.model('Users', userSchema);
