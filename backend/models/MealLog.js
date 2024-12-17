@@ -1,10 +1,5 @@
 import mongoose from 'mongoose';
 
-const nutrientSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  amount: { type: Number, min: 0, required: true },
-  unit: { type: String, required: true, default: 'grams' },
-});
 const mealLogSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
   mealName: { type: String, required: true },
@@ -17,14 +12,22 @@ const mealLogSchema = new mongoose.Schema({
       type: String, enum: ['gram', 'cup', 'bowl'], default: 'gram', required: true,
     },
   },
-  nutrients: [nutrientSchema],
+  nutrients: [
+    {
+      nutrientId: { type: Number, required: true },
+      nutrientName: { type: String, required: true },
+      unitName: { type: String, required: true },
+      value: { type: Number, required: true },
+    },
+  ],
 }, { timestamps: true });
 
 mealLogSchema.set('toJSON', {
-	transform: (doc, ret) => {
-		delete ret.__v;
-		return ret;
-	}
+  transform: (doc, ret) => {
+    const newRet = { ...ret };
+    delete newRet.__v;
+    return newRet;
+  },
 });
 
 mealLogSchema.index({ userId: 1, updatedAt: -1 });
