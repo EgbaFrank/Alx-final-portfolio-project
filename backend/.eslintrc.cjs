@@ -28,6 +28,14 @@ module.exports = {
       'LabeledStatement',
       'WithStatement',
     ],
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        'js': 'always',
+        'jsx': 'always',
+      }
+    ]
   },
   overrides: [
     {
