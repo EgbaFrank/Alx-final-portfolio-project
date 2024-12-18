@@ -13,20 +13,28 @@ const userSchema = new mongoose.Schema({
     match: [/\S+@\S+\.\S+/, 'Please enter a valid email address'],
   },
   password: { type: String, required: true },
-  age: { type: Number, min: 0 },
-  gender: { type: String },
+  age: { type: Number, min: 0, required: true },
+  gender: { type: String, enum: ['male', 'female'], default: 'not specified' },
   preferences: {
     vegetarian: { type: Boolean, default: false },
     allergies: { type: [String], default: [] },
   },
 }, { timestamps: true });
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function hashPassword(next) {
   if (this.isModified('password') || this.isNew) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
   }
   next();
+});
+
+userSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    const newRet = { ...ret };
+    delete newRet.__v;
+    return newRet;
+  },
 });
 
 userSchema.methods.comparePassword = async function comparePassword(candidatePassword) {
