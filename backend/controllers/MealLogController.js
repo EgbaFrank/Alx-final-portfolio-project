@@ -26,7 +26,7 @@ class MealLogController {
   static async getMealLogs(req, res) {
     try {
       const mealLogs = await MealLog.find({ userId: req.user._id });
-      return res.status(200).json({ mealLogs });
+      return res.status(200).json(mealLogs);
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: err.message });
