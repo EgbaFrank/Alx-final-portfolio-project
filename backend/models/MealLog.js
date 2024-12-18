@@ -14,6 +14,7 @@ const mealLogSchema = new mongoose.Schema({
   },
   nutrients: [
     {
+      _id: false,
       nutrientId: { type: Number, required: true },
       nutrientName: { type: String, required: true },
       unitName: { type: String, required: true },
