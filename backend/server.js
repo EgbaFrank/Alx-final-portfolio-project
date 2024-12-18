@@ -5,6 +5,8 @@ import connectDB from './utils/db.js';
 import userRoutes from './routes/userRoutes.js';
 import mealLogRoutes from './routes/mealLogRoutes.js';
 import insightRoutes from './routes/insightRoutes.js';
+import alertRoutes from './routes/alertRoutes.js';
+import tipRoutes from './routes/tipRoutes.js';
 
 dotenv.config();
 
@@ -18,6 +20,8 @@ const PORT = process.env.PORT || 5001;
 app.use('/api/users', userRoutes);
 app.use('/api/meallogs', mealLogRoutes);
 app.use('/api/insights', insightRoutes);
+app.use('/api/alerts', alertRoutes);
+app.use('/api/tips', tipRoutes);
 
 // Connect to mongoDB
 (async () => {
