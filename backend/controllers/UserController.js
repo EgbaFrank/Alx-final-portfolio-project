@@ -29,11 +29,7 @@ class UserController {
 
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-      return res.status(200).json({
-        message: 'User registration successful',
-        user: { firstname: user.firstname, email: user.email },
-        token,
-      });
+      return res.status(201).json({ token });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: err.message });
@@ -62,11 +58,7 @@ class UserController {
 
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
-      return res.status(200).json({
-        message: 'Login successful',
-        user: { firstname: user.firstname, email: user.email },
-        token,
-      });
+      return res.status(200).json({ token });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: err.message });
@@ -81,6 +73,37 @@ class UserController {
         return res.status(404).json({ error: 'User not found' });
       }
       return res.status(200).json({ user });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  static async updateUser(req, res) {
+    const {
+      firstname, lastname, age, email, gender, preferences,
+    } = req.body;
+
+    const updateFields = {};
+
+    if (firstname) updateFields.firstname = firstname;
+    if (lastname) updateFields.lastname = lastname;
+    if (age) updateFields.age = age;
+    if (email) updateFields.email = email;
+    if (gender) updateFields.gender = gender;
+    if (preferences) updateFields.preferences = preferences;
+
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        updateFields,
+        { new: true, runValidators: true },
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      return res.status(200).json({});
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: err.message });
