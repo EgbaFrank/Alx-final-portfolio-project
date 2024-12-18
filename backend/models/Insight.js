@@ -12,6 +12,14 @@ const insightSchema = new mongoose.Schema({
   }],
 }, { timestamps: true });
 
+insightSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    const newRet = { ...ret };
+    delete newRet.__v;
+    return newRet;
+  },
+});
+
 insightSchema.index({ userId: 1 });
 
 export default mongoose.model('Insights', insightSchema);
