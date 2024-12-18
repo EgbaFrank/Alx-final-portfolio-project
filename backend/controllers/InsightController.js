@@ -1,12 +1,13 @@
 import Insight from '../models/Insight.js';
 
 class InsightController {
-  static async createInsight(userId, deficiency, recommendation) {
+  static async createInsight(userId, period, endDate, nutrients) {
     try {
       const insight = new Insight({
         userId,
-        deficiency,
-        recommendation,
+        period,
+        endDate,
+        nutrients,
       });
 
       await insight.save();
