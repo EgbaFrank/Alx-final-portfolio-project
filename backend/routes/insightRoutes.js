@@ -5,5 +5,6 @@ import protectRoute from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.get('/', protectRoute, InsightController.getInsights);
+router.get('/latest', protectRoute, InsightController.getLatestInsight);
 
 export default router;
