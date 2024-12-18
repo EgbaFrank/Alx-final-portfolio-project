@@ -15,6 +15,6 @@ alertSchema.set('toJSON', {
   },
 });
 
-alertSchema.index({ userId: 1, status: 1 });
+alertSchema.index({ userId: 1, status: 1, createdAt: -1 });
 
 export default mongoose.model('Alerts', alertSchema);

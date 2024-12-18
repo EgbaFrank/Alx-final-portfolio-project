@@ -15,6 +15,6 @@ tipSchema.set('toJSON', {
   },
 });
 
-tipSchema.index({ userId: 1, status: 1 });
+tipSchema.index({ userId: 1, status: 1, createdAt: -1 });
 
 export default mongoose.model('Tips', tipSchema);

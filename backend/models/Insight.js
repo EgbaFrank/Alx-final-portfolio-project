@@ -22,6 +22,6 @@ insightSchema.set('toJSON', {
   },
 });
 
-insightSchema.index({ userId: 1, period: 1 });
+insightSchema.index({ userId: 1, period: 1, createdAt: -1 });
 
 export default mongoose.model('Insights', insightSchema);
