@@ -5,6 +5,7 @@ const alertSchema = new mongoose.Schema({
   nutrientName: { type: String, required: true },
   status: { type: String, enum: ['active', 'resolved'], default: 'active' },
   message: { type: String, required: true },
+  severity: { type: String, enum: ['low', 'medium', 'high'], required: true },
 }, { timestamps: true });
 
 alertSchema.set('toJSON', {
