@@ -12,15 +12,14 @@ const mealLogSchema = new mongoose.Schema({
       type: String, enum: ['gram', 'cup', 'bowl'], default: 'gram', required: true,
     },
   },
-  nutrients: [
-    {
-      _id: false,
-      nutrientId: { type: Number, required: true },
+  nutrients: {
+    type: Map,
+    of: new mongoose.Schema({
       nutrientName: { type: String, required: true },
       unitName: { type: String, required: true },
       value: { type: Number, required: true },
-    },
-  ],
+    }),
+  },
 }, { timestamps: true });
 
 mealLogSchema.set('toJSON', {
