@@ -4,14 +4,14 @@ const insightSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
   period: { type: String, enum: ['daily', 'weekly'], required: true },
   endDate: { type: Date, required: true },
-  nutrients: [
-    {
-      nutrientName: { type: String, required: true },
+  nutrients: {
+    type: Map,
+    of: new mongoose.Schema({
       totalValue: { type: Number, default: 0 },
       recommendedValue: { type: Number, required: true },
       status: { type: String, enum: ['deficient', 'excess', 'onTrack'], default: 'onTrack' },
-    },
-  ],
+    }),
+  },
   status: { type: String, enum: ['active', 'archived'], default: 'active' },
 }, { timestamps: true });
 
