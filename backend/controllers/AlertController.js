@@ -1,6 +1,16 @@
 import Alert from '../models/Alert.js';
 
 class AlertController {
+  static async generateAlerts(alerts) {
+    try {
+      const alertPromises = alerts.map((alert) => Alert.create(alert));
+      await Promise.all(alertPromises);
+    } catch (err) {
+      console.error(`Error generating alerts: ${err.message}`);
+      throw err;
+    }
+  }
+
   static async getAlerts(req, res) {
     const { status = 'active', limit = 10 } = req.query;
 
