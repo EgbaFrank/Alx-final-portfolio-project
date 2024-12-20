@@ -3,9 +3,8 @@ import mongoose from 'mongoose';
 const alertSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
   nutrientName: { type: String, required: true },
-  status: { type: String, enum: ['active', 'resolved'], default: 'active' },
-  message: { type: String, required: true },
-  severity: { type: String, enum: ['low', 'medium', 'high'], required: true },
+  status: { type: String, enum: ['active', 'pending', 'resolved'], default: 'pending' },
+  severity: { type: String, enum: ['mild', 'moderate', 'severe'], required: true },
 }, { timestamps: true });
 
 alertSchema.set('toJSON', {
