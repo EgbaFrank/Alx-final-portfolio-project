@@ -48,6 +48,41 @@ const nutrients = {
       unit: 'MG',
     },
   },
+  Magnesium: {
+    usdaId: 1090,
+    recommended: {
+      amount: 400,
+      unit: 'MG',
+    },
+  },
+  Potassium: {
+    usdaId: 1092,
+    recommended: {
+      amount: 4700,
+      unit: 'MG',
+    },
+  },
+  'Vitamin A': {
+    usdaId: 318,
+    recommended: {
+      amount: 900,
+      unit: 'MCG',
+    },
+  },
+  'Vitamin B12': {
+    usdaId: 418,
+    recommended: {
+      amount: 2.4,
+      unit: 'MCG',
+    },
+  },
+  'Vitamin E': {
+    usdaId: 323,
+    recommended: {
+      amount: 15,
+      unit: 'MG',
+    },
+  },
 };
 
 export default nutrients;
