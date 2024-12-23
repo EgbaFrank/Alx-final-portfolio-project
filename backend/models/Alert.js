@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 const alertSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
+  type: { type: String, enum: ['deficiency', 'excess'], required: true },
   nutrientName: { type: String, required: true },
   status: { type: String, enum: ['active', 'pending', 'resolved'], default: 'pending' },
   severity: { type: String, enum: ['mild', 'moderate', 'severe'], required: true },
