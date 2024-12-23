@@ -1,19 +1,18 @@
 import mongoose from 'mongoose';
 
+const nutrientSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  unit: { type: String, required: true },
+  value: { type: Number, required: true },
+}, { _id: false });
+
 // comp: Component
 const compSchema = new mongoose.Schema({
-  _id: false,
   name: { type: String, required: true },
   quantity: { type: Number, required: true },
   unit: { type: String, required: true, default: 'G' },
-  nutrients: {
-    type: Map,
-    of: {
-      unit: String,
-      value: Number,
-    },
-  },
-});
+  nutrients: [nutrientSchema],
+}, { _id: false });
 
 const recipeSchema = new mongoose.Schema({
   name: { type: String, required: true },
