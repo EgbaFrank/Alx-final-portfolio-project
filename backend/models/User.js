@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     vegetarian: { type: Boolean, default: false },
     allergies: { type: [String], default: [] },
   },
+  recipes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Recipes' }],
 }, { timestamps: true });
 
 userSchema.pre('save', async function hashPassword(next) {
