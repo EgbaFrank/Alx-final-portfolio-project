@@ -44,7 +44,7 @@ async function fetchNutrientData(foodName) {
         return null;
       })
       .filter(Boolean);
-
+console.log(filteredNutrients);
     return filteredNutrients;
   } catch (err) {
     console.error(`Error fetching food nutrients: ${err.message}`);
