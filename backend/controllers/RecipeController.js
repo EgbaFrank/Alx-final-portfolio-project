@@ -20,10 +20,16 @@ class RecipeController {
           }
 
           const nutrientData = await fetchNutrientData(compName);
-          console.log(nutrientData); // Remove print
 
           if (!nutrientData || nutrientData.length === 0) {
-            throw new Error(`Nutrient data for ${compName} not found`);
+            console.warn(`No nutrient data found for ${compName}`);
+
+            return {
+              name: compName,
+              quantity,
+              unit,
+              nutrients: [],
+	    };
           }
 
           const nutrientArray = nutrientData.map((nutrient) => {
