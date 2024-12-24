@@ -1,6 +1,7 @@
 import Recipe from '../models/Recipe.js';
 import fetchNutrientData from '../services/nutritionAPI.js';
 import nutrientsConfig from '../utils/nutrients.js';
+import findExistingComp from '../utils/comp-utils.js';
 
 class RecipeController {
   static async addRecipe(req, res) {
@@ -19,7 +20,8 @@ class RecipeController {
             throw new Error('Each ingredient must have a name and quantity');
           }
 
-          const nutrientData = await fetchNutrientData(compName);
+          const nutrientData = await findExistingComp(compName)
+                                || await fetchNutrientData(compName);
 
           if (!nutrientData || nutrientData.length === 0) {
             console.warn(`No nutrient data found for ${compName}`);
@@ -29,11 +31,11 @@ class RecipeController {
               quantity,
               unit,
               nutrients: [],
-	    };
+            };
           }
 
           const nutrientArray = nutrientData.map((nutrient) => {
-            const { name, amount, unit: nutrientUnit } = nutrient;
+            const { name, value: amount, unit: nutrientUnit } = nutrient;
             const recommendedUnit = nutrientsConfig[name]?.recommended?.unit ?? nutrientUnit;
 
             return {
@@ -60,7 +62,36 @@ class RecipeController {
 
       const savedRecipe = await newRecipe.save();
 
-      return res.status(200).json(savedRecipe);
+      return res.status(200).json({
+        id: savedRecipe._id,
+        name: savedRecipe.name,
+        nutrients: savedRecipe.nutrientAggregate,
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(400).json({ error: err.message });
+    }
+  }
+
+  static async saveRecipe(req, res) {
+    try {
+      const { recipeId } = req.params;
+
+      const recipeExists = await Recipe.findById(recipeId);
+
+      if (!recipeExists) {
+        throw new Error('Invalid recipe ID. Recipe does not exist');
+      }
+      const { user } = req;
+
+      if (user.recipes.includes(recipeId)) {
+        throw new Error('Recipe is already saved');
+      }
+
+      user.recipes.push(recipeId);
+      await user.save();
+
+      return res.status(201).json({});
     } catch (err) {
       console.error(err);
       return res.status(400).json({ error: err.message });
@@ -68,9 +99,20 @@ class RecipeController {
   }
 
   static async getRecipes(req, res) {
-  }
+    try {
+      const populatedUser = await req.user.populate('recipes');
 
-  static async saveRecipe(req, res) {
+      const simpleRecipes = populatedUser.recipes.map((recipe) => ({
+        id: recipe._id,
+        name: recipe.name,
+        nutrientAggregate: recipe.nutrientAggregate,
+      }));
+
+      return res.status(200).json(simpleRecipes);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: err.message });
+    }
   }
 }
 
