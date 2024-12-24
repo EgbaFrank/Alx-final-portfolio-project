@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 
 const mealLogSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
-  mealName: { type: String, required: true },
   mealType: { type: String, enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack'], required: true },
   recipe: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipes', required: true },
   nutrientAggregate: [{
