@@ -19,7 +19,37 @@ const recipeSchema = new mongoose.Schema({
   notes: { type: String },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
   comps: [compSchema],
+  nutrientAggregate: [nutrientSchema],
   isPublished: { type: Boolean, default: false },
 }, { timestamps: true });
+
+// aggregate recipe nutrients hook
+recipeSchema.pre('save', function aggregateNutrients(next) {
+  this.nutrientAggregate = this.comps.reduce((acc, comp) => {
+    comp.nutrients.forEach((nutrient) => {
+      const existing = acc.find((n) => n.name === nutrient.name);
+      if (existing) {
+        existing.value += nutrient.value;
+      } else {
+        acc.push({
+          name: nutrient.name,
+          unit: nutrient.unit,
+          value: nutrient.value,
+        });
+      }
+    });
+    return acc;
+  }, []);
+  next();
+});
+
+// remove version from output
+recipeSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    const newRet = { ...ret };
+    delete newRet.__v;
+    return newRet;
+  },
+});
 
 export default mongoose.model('Recipes', recipeSchema);
