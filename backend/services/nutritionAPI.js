@@ -37,14 +37,14 @@ async function fetchNutrientData(foodName) {
         if (nutrientName) {
           return {
             name: nutrientName,
-            amount: nutrient.value,
+            value: nutrient.value,
             unit: nutrient.unitName,
           };
         }
         return null;
       })
       .filter(Boolean);
-console.log(filteredNutrients);
+    console.log(filteredNutrients);
     return filteredNutrients;
   } catch (err) {
     console.error(`Error fetching food nutrients: ${err.message}`);
