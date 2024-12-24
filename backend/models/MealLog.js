@@ -3,8 +3,13 @@ import mongoose from 'mongoose';
 const mealLogSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
   mealName: { type: String, required: true },
-  mealType: { type: String, enum: ['Breakfast', 'Lunch', 'Dinner', 'Snacks'], required: true },
+  mealType: { type: String, enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack'], required: true },
   recipe: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipes', required: true },
+  nutrientAggregate: [{
+    name: { type: String, required: true },
+    unit: { type: String, required: true },
+    value: { type: Number, required: true },
+  }],
 }, { timestamps: true });
 
 mealLogSchema.set('toJSON', {
@@ -15,6 +20,6 @@ mealLogSchema.set('toJSON', {
   },
 });
 
-mealLogSchema.index({ userId: 1, updatedAt: -1 });
+mealLogSchema.index({ userId: 1, createdAt: -1 });
 
 export default mongoose.model('MealLogs', mealLogSchema);
