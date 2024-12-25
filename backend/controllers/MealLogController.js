@@ -1,24 +1,28 @@
 import MealLog from '../models/MealLog.js';
-import { fetchNutrientData } from '../services/nutritionAPI.js';
-import Insight from './InsightController.js';
+import Recipe from '../models/Recipe.js';
 
 class MealLogController {
   static async createMealLog(req, res) {
-    const {
-      mealName, mealType, portionSize, nutrients,
-    } = req.body;
-
     try {
-      const mealLog = new MealLog({
-        userId: req.user._id,
-        mealName,
+      const { recipeId, mealType } = req.body;
+
+      if (!recipeId || !mealType) {
+        return res.status(400).json({ error: 'Recipe ID and meal type are required' });
+      }
+      const recipe = await Recipe.findById(recipeId);
+
+      if (!recipe) {
+        return res.status(404).json({ error: 'Recipe not found' });
+      }
+
+      await MealLog.create({
+        user: req.user._id,
+        recipe: recipeId,
         mealType,
-        portionSize,
-        nutrients,
+        nutrientAggregate: recipe.nutrientAggregate,
       });
 
-      await mealLog.save();
-      return res.status(201).json({ message: 'Meal log created successfully', mealLog });
+      return res.status(201).json({});
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: err.message });
@@ -27,66 +31,45 @@ class MealLogController {
 
   static async getMealLogs(req, res) {
     try {
-      const mealLogs = await MealLog.find({ userId: req.user._id });
-      return res.status(200).json(mealLogs);
+      const {
+        startDate, endDate, page = 1, limit = 10,
+      } = req.query;
+
+      const query = { userId: req.user._id };
+
+      if (!startDate && !endDate) {
+        const today = new Date();
+
+        const startOfWeek = new Date(today.setDate(today.getDate - today.getDay));
+        const endOfWeek = new Date(today.setDate(today.getDate + 6));
+
+        query.updatedAt = { $gte: startOfWeek, $lte: endOfWeek };
+      } else {
+        query.updatedAt = {};
+        if (startDate) query.updatedAt.$gte = new Date(startDate);
+        if (endDate) query.updatedAt.$lte = new Date(endDate);
+      }
+
+      const mealLogs = await MealLog.find(query)
+        .populate('recipe', 'name nutrientAggregate')
+        .sort({ updateAt: -1 })
+        .skip((parseInt(page, 10) - 1) * parseInt(limit, 10))
+        .limit(parseInt(limit, 10));
+
+      const total = await MealLog.countDocuments(query);
+
+      return res.status(200).json({
+        mealLogs,
+        pagination: {
+          total,
+          page: parseInt(page, 10),
+          limit: parseInt(limit, 10),
+          pages: Math.ceil(total / limit),
+        },
+      });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: err.message });
-    }
-  }
-
-  static async getMealLog(req, res) {
-    const { id } = req.params;
-
-    if (!id) {
-      return res.status(401).json({ error: 'Please specify a mealLog ID' });
-    }
-
-    try {
-      const mealLog = await MealLog.findById(id);
-      if (!mealLog) {
-        return res.status(404).json({ message: 'Meal log not found' });
-      }
-      return res.status(200).json({ mealLog });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: err.message });
-    }
-  }
-
-  static async processMealLog(userId, mealData) {
-    try {
-      if (!mealData || !mealData.id || !mealData.portionSize) {
-        throw new Error('Invalid meal data provided.');
-      }
-
-      // retrieve meal nutrient info
-      const { microNutrientData, macroNutrientData } = await fetchNutrientData(mealData);
-
-      if (!microNutrientData || !macroNutrientData) {
-        throw new Error('Nutrient Data could not be retrieved for meal.');
-      }
-
-      // Get daily and weekly active insight
-      const [dailyInsight, weeklyInsight] = await Promise.all([
-        Insight.getActiveInsight(userId, 'daily'),
-        Insight.getActiveInsight(userId, 'weekly'),
-      ]);
-
-      if (!dailyInsight || !weeklyInsight) {
-        throw new Error('Could not fetch or create an active insight.');
-      }
-
-      // update daily and weekly active insight with meal nutrient data
-      await Promise.all([
-        Insight.updateInsight(dailyInsight, macroNutrientData),
-        Insight.updateInsight(weeklyInsight, microNutrientData),
-      ]);
-
-      return { dailyInsight, weeklyInsight };
-    } catch (err) {
-      console.error(`Error processing meal log: ${err.message}`);
-      throw err;
     }
   }
 }
