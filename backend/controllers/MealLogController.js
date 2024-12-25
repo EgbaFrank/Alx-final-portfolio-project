@@ -16,7 +16,7 @@ class MealLogController {
       }
 
       await MealLog.create({
-        user: req.user._id,
+        userId: req.user._id,
         recipe: recipeId,
         mealType,
         nutrientAggregate: recipe.nutrientAggregate,
