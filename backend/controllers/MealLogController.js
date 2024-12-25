@@ -54,7 +54,7 @@ class MealLogController {
       }
 
       const mealLogs = await MealLog.find(query)
-        .populate('recipe', 'name nutrientAggregate')
+        .populate('recipe', 'name')
         .sort({ updatedAt: -1 })
         .skip((pageNumber - 1) * limitNumber)
         .limit(limitNumber);
