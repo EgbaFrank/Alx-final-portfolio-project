@@ -37,11 +37,14 @@ class MealLogController {
 
       const query = { userId: req.user._id };
 
+      const pageNumber = parseInt(page, 10);
+      const limitNumber = parseInt(limit, 10);
+
       if (!startDate && !endDate) {
         const today = new Date();
 
-        const startOfWeek = new Date(today.setDate(today.getDate - today.getDay));
-        const endOfWeek = new Date(today.setDate(today.getDate + 6));
+        const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+        const endOfWeek = new Date(today.setDate(today.getDate() + 6));
 
         query.updatedAt = { $gte: startOfWeek, $lte: endOfWeek };
       } else {
@@ -52,9 +55,9 @@ class MealLogController {
 
       const mealLogs = await MealLog.find(query)
         .populate('recipe', 'name nutrientAggregate')
-        .sort({ updateAt: -1 })
-        .skip((parseInt(page, 10) - 1) * parseInt(limit, 10))
-        .limit(parseInt(limit, 10));
+        .sort({ updatedAt: -1 })
+        .skip((pageNumber - 1) * limitNumber)
+        .limit(limitNumber);
 
       const total = await MealLog.countDocuments(query);
 
@@ -62,9 +65,9 @@ class MealLogController {
         mealLogs,
         pagination: {
           total,
-          page: parseInt(page, 10),
-          limit: parseInt(limit, 10),
-          pages: Math.ceil(total / limit),
+          page: pageNumber,
+          limit: limitNumber,
+          pages: Math.ceil(total / limitNumber),
         },
       });
     } catch (err) {
