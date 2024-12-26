@@ -20,7 +20,7 @@ const recipeSchema = new mongoose.Schema({
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
   servings: { type: Number, required: true },
   comps: [compSchema],
-  nutrientAggregate: [nutrientSchema],
+  nutrientAggregate: [nutrientSchema],  // Nutrient Per Serving
   isPublished: { type: Boolean, default: false },
 }, { timestamps: true });
 
