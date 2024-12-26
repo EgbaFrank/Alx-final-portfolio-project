@@ -42,10 +42,10 @@ const nutrients = {
     },
   },
   'Vitamin D': {
-    usdaId: 1114,
+    usdaId: 1106,
     recommended: {
-      amount: 20,
-      unit: 'MG',
+      amount: 15,
+      unit: 'MCG',
     },
   },
   Magnesium: {
@@ -55,31 +55,52 @@ const nutrients = {
       unit: 'MG',
     },
   },
-  Potassium: {
-    usdaId: 1092,
+  Zinc: {
+    usdaId: 1095,
     recommended: {
-      amount: 4700,
+      amount: 11,
       unit: 'MG',
     },
   },
   'Vitamin A': {
-    usdaId: 318,
+    usdaId: 1104,
     recommended: {
       amount: 900,
       unit: 'MCG',
     },
   },
   'Vitamin B12': {
-    usdaId: 418,
+    usdaId: 1178,
     recommended: {
       amount: 2.4,
       unit: 'MCG',
     },
   },
   'Vitamin E': {
-    usdaId: 323,
+    usdaId: 1114,
     recommended: {
       amount: 15,
+      unit: 'MG',
+    },
+  },
+  'Fiber': {
+    usdaId: 1079,
+    recommended: {
+      amount: 25,
+      unit: 'G',
+    },
+  },
+  'Potassium': {
+    usdaId: 1092,
+    recommended: {
+      amount: 3400,
+      unit: 'MG',
+    },
+  },
+  'Sodium': {
+    usdaId: 1093,
+    recommended: {
+      amount: 1500,
       unit: 'MG',
     },
   },
