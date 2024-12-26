@@ -4,6 +4,7 @@ const mealLogSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
   mealType: { type: String, enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack'], required: true },
   recipe: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipes', required: true },
+  serving: { type: Number, required: true },
   nutrientAggregate: [{
     _id: false,
     name: { type: String, required: true },
