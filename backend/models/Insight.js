@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const insightSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
-  period: { type: String, enum: ['daily', 'weekly'], required: true },
+  type: { type: String, enum: ['Macro', 'Micro'], required: true },
   endDate: { type: Date, required: true },
   nutrients: {
     type: Map,
@@ -23,6 +23,6 @@ insightSchema.set('toJSON', {
   },
 });
 
-insightSchema.index({ userId: 1, period: 1, createdAt: -1 });
+insightSchema.index({ userId: 1, createdAt: -1 });
 
 export default mongoose.model('Insights', insightSchema);
