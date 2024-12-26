@@ -26,7 +26,7 @@ const recipeSchema = new mongoose.Schema({
 
 // aggregate recipe nutrients hook
 recipeSchema.pre('save', function aggregateNutrients(next) {
-  this.nutrientAggregate = this.comps.reduce((acc, comp) => {
+  const totalNutrients = this.comps.reduce((acc, comp) => {
     comp.nutrients.forEach((nutrient) => {
       const existing = acc.find((n) => n.name === nutrient.name);
       if (existing) {
@@ -41,6 +41,13 @@ recipeSchema.pre('save', function aggregateNutrients(next) {
     });
     return acc;
   }, []);
+
+  this.nutrientAggregate = totalNutrients.map((nutrient) => ({
+    name: nutrient.name,
+    unit: nutrient.unit,
+    value: nutrient.value / this.servings,
+  }));
+
   next();
 });
 
