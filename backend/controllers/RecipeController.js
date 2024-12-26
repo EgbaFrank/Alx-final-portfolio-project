@@ -5,10 +5,14 @@ import findExistingComp from '../utils/comp-utils.js';
 
 class RecipeController {
   static async addRecipe(req, res) {
-    const { name, comps } = req.body;
+    const { name, servings, comps } = req.body;
 
-    if (!name || !comps || !Array.isArray(comps) || comps.length === 0) {
-      return res.status(400).json({ error: 'Recipe name and ingredients are required' });
+    if (!name || !comps || !Array.isArray(comps) || comps.length === 0 || !servings) {
+      return res.status(400).json({ error: 'Recipe name, servings and ingredients are required' });
+    }
+
+    if (!Number.isInteger(servings) || servings <= 0) {
+	    return res.status(400).json({ error: 'Servings must be a positive integer' });
     }
 
     try {
@@ -58,6 +62,7 @@ class RecipeController {
         name,
         comps: validatedComps,
         createdBy: req.user._id,
+        servings,
       });
 
       const savedRecipe = await newRecipe.save();
@@ -65,6 +70,7 @@ class RecipeController {
       return res.status(200).json({
         id: savedRecipe._id,
         name: savedRecipe.name,
+        servings: savedRecipe.servings,
         nutrients: savedRecipe.nutrientAggregate,
       });
     } catch (err) {
@@ -105,6 +111,7 @@ class RecipeController {
       const simpleRecipes = populatedUser.recipes.map((recipe) => ({
         id: recipe._id,
         name: recipe.name,
+	servings: recipe.servings,
         nutrientAggregate: recipe.nutrientAggregate,
       }));
 
