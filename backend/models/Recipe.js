@@ -18,6 +18,7 @@ const recipeSchema = new mongoose.Schema({
   name: { type: String, required: true },
   notes: { type: String },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
+  servings: { type: Number, required: true },
   comps: [compSchema],
   nutrientAggregate: [nutrientSchema],
   isPublished: { type: Boolean, default: false },
