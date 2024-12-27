@@ -10,7 +10,7 @@ class MealLogController {
         return res.status(400).json({ error: 'Recipe ID, meal type and serving consumed are required' });
       }
 
-      if (!Number.isInteger(serving) || serving <= 0) {
+      if (serving <= 0) {
         return res.status(400).json({ error: 'Serving consumed must be a positive integer' });
       }
 
