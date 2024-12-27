@@ -83,21 +83,21 @@ const nutrients = {
       unit: 'MG',
     },
   },
-  'Fiber': {
+  Fiber: {
     usdaId: 1079,
     recommended: {
       amount: 25,
       unit: 'G',
     },
   },
-  'Potassium': {
+  Potassium: {
     usdaId: 1092,
     recommended: {
       amount: 3400,
       unit: 'MG',
     },
   },
-  'Sodium': {
+  Sodium: {
     usdaId: 1093,
     recommended: {
       amount: 1500,
