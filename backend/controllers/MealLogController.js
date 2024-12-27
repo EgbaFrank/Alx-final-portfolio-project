@@ -7,11 +7,11 @@ class MealLogController {
       const { recipeId, mealType, serving } = req.body;
 
       if (!recipeId || !mealType || !serving) {
-        return res.status(400).json({ error: 'Recipe ID, meal type and servings consumed are required' });
+        return res.status(400).json({ error: 'Recipe ID, meal type and serving consumed are required' });
       }
 
       if (!Number.isInteger(serving) || serving <= 0) {
-        return res.status(400).json({ error: 'Servings consumed must be a positive integer' });
+        return res.status(400).json({ error: 'Serving consumed must be a positive integer' });
       }
 
       const recipe = await Recipe.findById(recipeId);
@@ -20,7 +20,7 @@ class MealLogController {
         return res.status(404).json({ error: 'Recipe not found' });
       }
 
-      const scaledNutrientAggregate = recipe.nutrientAggregate.map((nutrient) => ({
+      const scaledNutrientAggregate = recipe.nutrientPerServing.map((nutrient) => ({
         name: nutrient.name,
         unit: nutrient.unit,
         value: nutrient.value * serving,
@@ -32,7 +32,7 @@ class MealLogController {
         recipe: recipeId,
         mealType,
         serving,
-        nutrientAggregate: scaledNutrientAggregate,
+        nutrientPerServing: scaledNutrientAggregate,
       });
 
       return res.status(201).json({});
