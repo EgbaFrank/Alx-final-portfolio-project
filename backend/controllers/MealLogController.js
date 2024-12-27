@@ -10,8 +10,8 @@ class MealLogController {
         return res.status(400).json({ error: 'Recipe ID, meal type and serving consumed are required' });
       }
 
-      if (serving <= 0) {
-        return res.status(400).json({ error: 'Serving consumed must be a positive integer' });
+      if (Number.isNaN(serving) || serving <= 0) {
+        return res.status(400).json({ error: 'Serving consumed must be a positive number' });
       }
 
       const recipe = await Recipe.findById(recipeId);
@@ -25,7 +25,7 @@ class MealLogController {
         unit: nutrient.unit,
         value: nutrient.value * serving,
       }));
-      console.log(`Meallog nutrient for this serving:\n${scaledNutrientAggregate}`);
+      console.log(`Meallog nutrient for this serving:\n${JSON.stringify(scaledNutrientAggregate, null, 2)}`);
 
       await MealLog.create({
         userId: req.user._id,
