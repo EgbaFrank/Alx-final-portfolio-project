@@ -4,22 +4,35 @@ import Recipe from '../models/Recipe.js';
 class MealLogController {
   static async createMealLog(req, res) {
     try {
-      const { recipeId, mealType } = req.body;
+      const { recipeId, mealType, serving } = req.body;
 
-      if (!recipeId || !mealType) {
-        return res.status(400).json({ error: 'Recipe ID and meal type are required' });
+      if (!recipeId || !mealType || !serving) {
+        return res.status(400).json({ error: 'Recipe ID, meal type and servings consumed are required' });
       }
+
+      if (!Number.isInteger(serving) || serving <= 0) {
+        return res.status(400).json({ error: 'Servings consumed must be a positive integer' });
+      }
+
       const recipe = await Recipe.findById(recipeId);
 
       if (!recipe) {
         return res.status(404).json({ error: 'Recipe not found' });
       }
 
+      const scaledNutrientAggregate = recipe.nutrientAggregate.map((nutrient) => ({
+        name: nutrient.name,
+        unit: nutrient.unit,
+        value: nutrient.value * serving,
+      }));
+      console.log(`Meallog nutrient for this serving:\n${scaledNutrientAggregate}`);
+
       await MealLog.create({
         userId: req.user._id,
         recipe: recipeId,
         mealType,
-        nutrientAggregate: recipe.nutrientAggregate,
+        serving,
+        nutrientAggregate: scaledNutrientAggregate,
       });
 
       return res.status(201).json({});
