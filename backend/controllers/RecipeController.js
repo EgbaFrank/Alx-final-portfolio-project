@@ -12,7 +12,7 @@ class RecipeController {
     }
 
     if (!Number.isInteger(servings) || servings <= 0) {
-	    return res.status(400).json({ error: 'Servings must be a positive integer' });
+      return res.status(400).json({ error: 'Servings must be a positive integer' });
     }
 
     try {
@@ -24,8 +24,7 @@ class RecipeController {
             throw new Error('Each ingredient must have a name and quantity');
           }
 
-          const nutrientData = await findExistingComp(compName)
-                                || await fetchNutrientData(compName);
+          const nutrientData = await fetchNutrientData(compName); // || await findExistingComp(compName);
 
           if (!nutrientData || nutrientData.length === 0) {
             console.warn(`No nutrient data found for ${compName}`);
@@ -37,6 +36,7 @@ class RecipeController {
               nutrients: [],
             };
           }
+          console.log(`raw ${compName} nutrient data:`, nutrientData)
 
           const nutrientArray = nutrientData.map((nutrient) => {
             const { name, value: amount, unit: nutrientUnit } = nutrient;
@@ -111,7 +111,7 @@ class RecipeController {
       const simpleRecipes = populatedUser.recipes.map((recipe) => ({
         id: recipe._id,
         name: recipe.name,
-	servings: recipe.servings,
+        servings: recipe.servings,
         nutrientAggregate: recipe.nutrientAggregate,
       }));
 
