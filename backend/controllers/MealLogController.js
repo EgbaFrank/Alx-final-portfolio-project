@@ -50,27 +50,21 @@ class MealLogController {
 
       const query = { userId: req.user._id };
 
-      const pageNumber = parseInt(page, 10);
-      const limitNumber = parseInt(limit, 10);
+      const pageNumber = parseInt(page, 10) || 1;
+      const limitNumber = parseInt(limit, 10) || 10;
 
-      if (!startDate && !endDate) {
-        const today = new Date();
-
-        const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-        const endOfWeek = new Date(today.setDate(today.getDate() + 6));
-
-        query.updatedAt = { $gte: startOfWeek, $lte: endOfWeek };
-      } else {
-        query.updatedAt = {};
-        if (startDate) query.updatedAt.$gte = new Date(startDate);
-        if (endDate) query.updatedAt.$lte = new Date(endDate);
+      if (startDate || endDate) {
+        query.createdAt = {};
+        if (startDate) query.createdAt.$gte = new Date(startDate);
+        if (endDate) query.createdAt.$lte = new Date(endDate);
       }
 
       const mealLogs = await MealLog.find(query)
         .populate('recipe', 'name')
-        .sort({ updatedAt: -1 })
+        .sort({ createdAt: -1 })
         .skip((pageNumber - 1) * limitNumber)
-        .limit(limitNumber);
+        .limit(limitNumber)
+        .lean();
 
       const total = await MealLog.countDocuments(query);
 
