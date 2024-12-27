@@ -1,44 +1,56 @@
 import Insight from '../models/Insight.js';
 import Alert from './AlertController.js';
+import nutrientsData from '../utils/nutrients.js';
 
 class InsightController {
-  static _calculateEndDate(period) {
+  static _calculateEndDate(type) {
     const now = new Date();
 
-    if (period === 'daily') {
-      return new Date(now.setUTCHours(23, 60, 60, 999));
-    } if (period === 'weekly') {
+    if (type === 'Macro') {
+      return new Date(now.setUTCHours(23, 59, 59, 999));
+    } if (type === 'Micro') {
       const endOfWeek = new Date(now);
       endOfWeek.setDate(now.getDate() + (7 - now.getDay()));
-      endOfWeek.setUTCHours(23, 60, 60, 999);
+      endOfWeek.setUTCHours(23, 59, 59, 999);
       return endOfWeek;
     }
-    throw new Error('Invalid period specified');
+    throw new Error('Invalid type specified');
   }
 
-  static async getActiveInsight(userId, period) {
+  static async getActiveInsight(userId, type) {
     try {
-      const insight = await Insight.findOne({ userId, period, status: 'active' });
+      const insight = await Insight.findOne({ userId, type, active: true });
 
       if (insight && new Date() < insight.endDate) {
         return insight;
       }
 
       if (insight) {
-        insight.status = 'archived';
+        insight.active = false;
         await insight.save();
       }
-      const endDate = this._calculateEndDate(period);
+      const endDate = this._calculateEndDate(type);
+
+      const nutrients = {};
+      for (const nutrient of nutrientsData) {
+        if (nutrient.type === type) {
+          nutrients[nutrient.name] = {
+            totalValue: 0,
+            recommendedValue: nutrient.recommended || 0,
+            status: 'onTrack',
+          };
+        }
+      }
 
       return await Insight.create({
         userId,
-        period,
-        status: 'active',
+        type,
+        active: true,
         endDate,
-        nutrients: [],
+        nutrients,
       });
     } catch (err) {
-      console.error(`Error getting active insight: ${err.messagw}`);
+      console.error(`Error getting active insight: ${err.message}`);
       throw err;
     }
   }
@@ -133,17 +145,19 @@ class InsightController {
   }
 
   static async getLatestInsight(req, res) {
-    const { period } = req.query;
+    const { type } = req.params;
 
-    const query = { userId: req.user._id };
+    if (!type || !['Micro', 'Macro'].includes(type)) {
+      return res.status(400).json({ error: 'Type parameter must be specified as either "Macro" or "Micro".' });
+    }
 
-    if (period) query.period = period;
+    const query = { userId: req.user._id, type };
 
     try {
-      const insight = await Insight.findOne(query).sort({ createdAt: -1 });
+      const insight = await Insight.findOne(query).sort({ createdAt: -1 }).lean();
 
       if (!insight) {
-        return res.status(404).json({ error: 'No insights found for specified period' });
+        return res.status(404).json({ error: 'No insights found for specified type' });
       }
 
       return res.status(200).json(insight);
@@ -154,17 +168,45 @@ class InsightController {
   }
 
   static async getInsights(req, res) {
-    const { period, limit = 10, page = 1 } = req.query;
-    const query = { userId: req.user._id };
+    const {
+      startDate, endDate, type, limit = 10, page = 1,
+    } = req.query;
 
-    if (period) query.period = period;
+    const userId = req.user._id;
+
+    if (!type || !['Micro', 'Macro'].includes(type)) {
+      return res.status(400).json({ error: 'Type property must be specified as either "Macro" or "Micro".' });
+    }
+
+    const query = { userId, type };
+
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 10;
+
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$lte = new Date(endDate);
+    }
 
     try {
       const insights = await Insight.find(query)
         .sort({ createdAt: -1 })
-        .skip((page - 1) * parseInt(limit, 10))
-        .limit(parseInt(limit, 10));
-      return res.status(200).json(insights);
+        .skip((pageNumber - 1) * limitNumber)
+        .limit(limitNumber)
+        .lean();
+
+      const total = await Insight.countDocuments(query);
+
+      return res.status(200).json({
+        insights,
+        pagination: {
+          total,
+          page: pageNumber,
+          limit: limitNumber,
+          pages: Math.ceil(total / limitNumber),
+        },
+      });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: err.message });
