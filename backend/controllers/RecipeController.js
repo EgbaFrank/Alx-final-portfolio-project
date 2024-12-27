@@ -1,7 +1,7 @@
 import Recipe from '../models/Recipe.js';
 import fetchNutrientData from '../services/nutritionAPI.js';
 import nutrientsConfig from '../utils/nutrients.js';
-import findExistingComp from '../utils/comp-utils.js';
+// import findExistingComp from '../utils/comp-utils.js';
 
 class RecipeController {
   static async addRecipe(req, res) {
@@ -24,7 +24,8 @@ class RecipeController {
             throw new Error('Each ingredient must have a name and quantity');
           }
 
-          const nutrientData = await fetchNutrientData(compName); // || await findExistingComp(compName);
+          const nutrientData = await fetchNutrientData(compName);
+          // || await findExistingComp(compName);
 
           if (!nutrientData || nutrientData.length === 0) {
             console.warn(`No nutrient data found for ${compName}`);
@@ -36,7 +37,7 @@ class RecipeController {
               nutrients: [],
             };
           }
-          console.log(`raw ${compName} nutrient data:`, nutrientData)
+          console.log(`raw ${compName} nutrient data:`, nutrientData);
 
           const nutrientArray = nutrientData.map((nutrient) => {
             const { name, value: amount, unit: nutrientUnit } = nutrient;
