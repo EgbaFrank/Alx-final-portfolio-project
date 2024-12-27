@@ -4,6 +4,7 @@ const nutrients = {
     recommended: {
       amount: 50,
       unit: 'G',
+      type: 'Macro',
     },
   },
   Carbohydrate: {
@@ -11,6 +12,7 @@ const nutrients = {
     recommended: {
       amount: 275,
       unit: 'G',
+      type: 'Macro',
     },
   },
   Fat: {
@@ -18,6 +20,7 @@ const nutrients = {
     recommended: {
       amount: 70,
       unit: 'G',
+      type: 'Macro',
     },
   },
   'Vitamin C': {
@@ -25,6 +28,7 @@ const nutrients = {
     recommended: {
       amount: 90,
       unit: 'MG',
+      type: 'Micro',
     },
   },
   Calcium: {
@@ -32,6 +36,7 @@ const nutrients = {
     recommended: {
       amount: 1000,
       unit: 'MG',
+      type: 'Micro',
     },
   },
   Iron: {
@@ -39,13 +44,15 @@ const nutrients = {
     recommended: {
       amount: 18,
       unit: 'MG',
+      type: 'Micro',
     },
   },
   'Vitamin D': {
     usdaId: 1106,
     recommended: {
       amount: 15,
-      unit: 'MCG',
+      unit: 'UG',
+      type: 'Micro',
     },
   },
   Magnesium: {
@@ -53,6 +60,7 @@ const nutrients = {
     recommended: {
       amount: 400,
       unit: 'MG',
+      type: 'Micro',
     },
   },
   Zinc: {
@@ -60,20 +68,23 @@ const nutrients = {
     recommended: {
       amount: 11,
       unit: 'MG',
+      type: 'Micro',
     },
   },
   'Vitamin A': {
     usdaId: 1104,
     recommended: {
       amount: 900,
-      unit: 'MCG',
+      unit: 'UG',
+      type: 'Micro',
     },
   },
   'Vitamin B12': {
     usdaId: 1178,
     recommended: {
       amount: 2.4,
-      unit: 'MCG',
+      unit: 'UG',
+      type: 'Micro',
     },
   },
   'Vitamin E': {
@@ -81,6 +92,7 @@ const nutrients = {
     recommended: {
       amount: 15,
       unit: 'MG',
+      type: 'Micro',
     },
   },
   Fiber: {
@@ -88,6 +100,7 @@ const nutrients = {
     recommended: {
       amount: 25,
       unit: 'G',
+      type: 'Macro',
     },
   },
   Potassium: {
@@ -95,6 +108,7 @@ const nutrients = {
     recommended: {
       amount: 3400,
       unit: 'MG',
+      type: 'Micro',
     },
   },
   Sodium: {
@@ -102,6 +116,7 @@ const nutrients = {
     recommended: {
       amount: 1500,
       unit: 'MG',
+      type: 'Micro',
     },
   },
 };
