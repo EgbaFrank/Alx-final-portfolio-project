@@ -71,7 +71,7 @@ class RecipeController {
         id: savedRecipe._id,
         name: savedRecipe.name,
         servings: savedRecipe.servings,
-        nutrients: savedRecipe.nutrientAggregate,
+        nutrientPerServing: savedRecipe.nutrientPerServing,
       });
     } catch (err) {
       console.error(err);
@@ -112,7 +112,7 @@ class RecipeController {
         id: recipe._id,
         name: recipe.name,
         servings: recipe.servings,
-        nutrientAggregate: recipe.nutrientAggregate,
+        nutrientPerServing: recipe.nutrientPerServing,
       }));
 
       return res.status(200).json(simpleRecipes);
