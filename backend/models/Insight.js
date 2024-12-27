@@ -12,7 +12,7 @@ const insightSchema = new mongoose.Schema({
       status: { type: String, enum: ['deficient', 'excess', 'onTrack'], default: 'onTrack' },
     }),
   },
-  archived: { type: Boolean, default: false },
+  active: { type: Boolean, default: true },
 }, { timestamps: true });
 
 insightSchema.set('toJSON', {
