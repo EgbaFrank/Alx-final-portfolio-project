@@ -20,7 +20,7 @@ const recipeSchema = new mongoose.Schema({
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
   servings: { type: Number, required: true },
   comps: [compSchema],
-  nutrientAggregate: [nutrientSchema],  // Nutrient Per Serving
+  nutrientAggregate: [nutrientSchema], // Nutrient Per Serving
   isPublished: { type: Boolean, default: false },
 }, { timestamps: true });
 
@@ -41,6 +41,7 @@ recipeSchema.pre('save', function aggregateNutrients(next) {
     });
     return acc;
   }, []);
+  console.log(`Recipe total nutrient: ${JSON.stringify(totalNutrients, null, 2)}`);
 
   this.nutrientAggregate = totalNutrients.map((nutrient) => ({
     name: nutrient.name,
