@@ -2,17 +2,17 @@ import mongoose from 'mongoose';
 
 const insightSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
-  period: { type: String, enum: ['daily', 'weekly'], required: true },
+  type: { type: String, enum: ['Macro', 'Micro'], required: true },
   endDate: { type: Date, required: true },
-  nutrients: [
-    {
-      nutrientName: { type: String, required: true },
+  nutrients: {
+    type: Map,
+    of: new mongoose.Schema({
       totalValue: { type: Number, default: 0 },
       recommendedValue: { type: Number, required: true },
       status: { type: String, enum: ['deficient', 'excess', 'onTrack'], default: 'onTrack' },
-    },
-  ],
-  status: { type: String, enum: ['active', 'archived'], default: 'active' },
+    }),
+  },
+  archived: { type: Boolean, default: false },
 }, { timestamps: true });
 
 insightSchema.set('toJSON', {
@@ -23,6 +23,6 @@ insightSchema.set('toJSON', {
   },
 });
 
-insightSchema.index({ userId: 1, period: 1, createdAt: -1 });
+insightSchema.index({ userId: 1, createdAt: -1 });
 
 export default mongoose.model('Insights', insightSchema);

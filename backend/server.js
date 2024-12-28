@@ -7,6 +7,7 @@ import mealLogRoutes from './routes/mealLogRoutes.js';
 import insightRoutes from './routes/insightRoutes.js';
 import alertRoutes from './routes/alertRoutes.js';
 import tipRoutes from './routes/tipRoutes.js';
+import recipeRoutes from './routes/recipeRoutes.js';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/meallogs', mealLogRoutes);
 app.use('/api/insights', insightRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/tips', tipRoutes);
+app.use('/api/recipes', recipeRoutes);
 
 // Connect to mongoDB
 (async () => {
