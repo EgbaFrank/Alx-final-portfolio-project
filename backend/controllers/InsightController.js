@@ -32,11 +32,11 @@ class InsightController {
       const endDate = this._calculateEndDate(type);
 
       const nutrients = {};
-      for (const nutrient of nutrientsData) {
-        if (nutrient.type === type) {
-          nutrients[nutrient.name] = {
+      for (const [nutrientName, nutrient] of Object.entries(nutrientsData)) {
+        if (nutrient.recommended.type === type) {
+          nutrients[nutrientName] = {
             totalValue: 0,
-            recommendedValue: nutrient.recommended || 0,
+            recommendedValue: nutrient.recommended.amount || 0,
             status: 'onTrack',
           };
         }
@@ -62,6 +62,10 @@ class InsightController {
   }
 
   static _determineSeverity(status, nutrient) {
+    if (nutrient.recommended === 0) {
+      return 'mild';
+    }
+
     const percentage = nutrient.totalValue / nutrient.recommendedValue;
 
     if (status === 'deficient') {
@@ -80,17 +84,21 @@ class InsightController {
 
   static async updateInsight(insight, nutrientData) {
     try {
+      if (!Array.isArray(nutrientData)) {
+        throw new Error('Nutrient Data must be an array.');
+      }
+
       const alertsToGenerate = [];
 
-      nutrientData.foreach((nutrient) => {
+      nutrientData.forEach((nutrient) => {
         if (!nutrient.name) return;
 
-        const key = nutrient.name.toLowerCase;
-
+        const key = nutrient.name;
         const existingNutrient = insight.nutrients.get(key);
 
         if (existingNutrient) {
           existingNutrient.totalValue += nutrient.value;
+
           const newStatus = this._determineStatus(
             existingNutrient.totalValue,
             existingNutrient.recommendedValue,
@@ -103,33 +111,12 @@ class InsightController {
             alertsToGenerate.push({
               userId: insight.userId,
               nutrientName: nutrient.name,
+              type: newStatus,
               status: 'pending',
               severity: this._determineSeverity(newStatus, existingNutrient),
             });
           }
           existingNutrient.status = newStatus;
-        } else {
-          const initialStatus = this._determineStatus(
-            nutrient.value,
-            nutrient.recommendedValue,
-          );
-
-          insight.nutrients.set(key, {
-            totalValue: nutrient.value,
-            recommendedValue: nutrient.recommendedValue,
-            status: initialStatus,
-          });
-          if (initialStatus === 'deficient' || initialStatus === 'excess') {
-            alertsToGenerate.push({
-              userId: insight.userId,
-              nutrientName: nutrient.name,
-              status: 'pending',
-              severity: this._determineSeverity(initialStatus, {
-                totalValue: nutrient.value,
-                recommendedValue: nutrient.recommendedValue,
-              }),
-            });
-          }
         }
       });
       await insight.save();
@@ -137,6 +124,7 @@ class InsightController {
       if (alertsToGenerate.length > 0) {
         await Alert.generateAlerts(alertsToGenerate);
       }
+
       return insight;
     } catch (err) {
       console.error(`Error updating insight: ${err.message}`);
@@ -147,11 +135,13 @@ class InsightController {
   static async getLatestInsight(req, res) {
     const { type } = req.params;
 
-    if (!type || !['Micro', 'Macro'].includes(type)) {
-      return res.status(400).json({ error: 'Type parameter must be specified as either "Macro" or "Micro".' });
+    if (!type || !['micro', 'macro'].includes(type)) {
+      return res.status(400).json({ error: 'Type parameter must be specified as either "macro" or "micro".' });
     }
 
-    const query = { userId: req.user._id, type };
+    const capitalizeType = type[0].toUpperCase() + type.slice(1);
+
+    const query = { userId: req.user._id, type: capitalizeType };
 
     try {
       const insight = await Insight.findOne(query).sort({ createdAt: -1 }).lean();
@@ -170,7 +160,7 @@ class InsightController {
   static async getInsights(req, res) {
     const {
       startDate, endDate, type, limit = 10, page = 1,
-    } = req.query;
+    } = req.body;
 
     const userId = req.user._id;
 
