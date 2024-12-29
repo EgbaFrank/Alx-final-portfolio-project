@@ -1,10 +1,36 @@
 import MealLog from '../models/MealLog.js';
 import Recipe from '../models/Recipe.js';
+import Insight from './InsightController.js';
 
 class MealLogController {
+  static async _processMealLog(userId, nutrients) {
+    try {
+      const [macroInsight, microInsight] = await Promise.all([
+        Insight.getActiveInsight(userId, 'Macro'),
+        Insight.getActiveInsight(userId, 'Micro'),
+      ]);
+
+      if (!macroInsight || !microInsight) {
+        throw new Error('Could not fetch or create active insight.');
+      }
+
+      await Promise.all([
+        Insight.updateInsight(macroInsight, nutrients),
+        Insight.updateInsight(microInsight, nutrients),
+      ]);
+
+      return true;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
   static async createMealLog(req, res) {
     try {
       const { recipeId, mealType, serving } = req.body;
+
+      const userId = req.user._id;
 
       if (!recipeId || !mealType || !serving) {
         return res.status(400).json({ error: 'Recipe ID, meal type and serving consumed are required' });
@@ -28,12 +54,14 @@ class MealLogController {
       console.log(`Meallog nutrient for this serving:\n${JSON.stringify(scaledNutrientAggregate, null, 2)}`);
 
       await MealLog.create({
-        userId: req.user._id,
+        userId,
         recipe: recipeId,
         mealType,
         serving,
         nutrientPerServing: scaledNutrientAggregate,
       });
+
+      await MealLogController._processMealLog(userId, scaledNutrientAggregate);
 
       return res.status(201).json({});
     } catch (err) {
