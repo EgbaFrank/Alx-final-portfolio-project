@@ -111,7 +111,7 @@ class InsightController {
             alertsToGenerate.push({
               userId: insight.userId,
               nutrientName: nutrient.name,
-              type: newStatus,
+              alertType: newStatus,
               status: 'pending',
               severity: this._determineSeverity(newStatus, existingNutrient),
             });
