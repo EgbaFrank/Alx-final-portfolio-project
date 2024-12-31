@@ -37,7 +37,6 @@ class RecipeController {
               nutrients: [],
             };
           }
-          console.log(`raw ${compName} nutrient data:`, nutrientData);
 
           const nutrientArray = nutrientData.map((nutrient) => {
             const { name, value: amount, unit: nutrientUnit } = nutrient;
@@ -49,6 +48,8 @@ class RecipeController {
               value: (amount ?? 0) * (quantity / 100),
             };
           });
+
+          console.log(`raw ${compName} nutrient data:`, JSON.stringify(nutrientArray, null, 2));
 
           return {
             name: compName,
