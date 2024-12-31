@@ -3,8 +3,7 @@ import Alert from '../models/Alert.js';
 class AlertController {
   static async generateAlerts(alerts) {
     try {
-      const alertPromises = alerts.map((alert) => Alert.create(alert));
-      await Promise.all(alertPromises);
+      await Alert.insertMany(alerts);
     } catch (err) {
       console.error(`Error generating alerts: ${err.message}`);
       throw err;
