@@ -3,6 +3,60 @@ import Alert from './AlertController.js';
 import nutrientsData from '../utils/nutrients.js';
 
 class InsightController {
+  static _determineStatus(totalValue, recommendedValue) {
+    if (totalValue < recommendedValue * 0.8) return 'deficient';
+    if (totalValue > recommendedValue * 1.2) return 'excess';
+    return 'onTrack';
+  }
+
+  static _determineSeverity(status, nutrient) {
+    if (nutrient.recommended === 0) {
+      return 'mild';
+    }
+
+    const percentage = nutrient.totalValue / nutrient.recommendedValue;
+
+    if (status === 'deficient') {
+      if (percentage < 0.3) return 'severe';
+      if (percentage < 0.6) return 'moderate';
+      return 'mild';
+    }
+
+    if (status === 'excess') {
+      if (percentage > 1.7) return 'severe';
+      if (percentage > 1.4) return 'moderate';
+      return 'mild';
+    }
+    return 'mild';
+  }
+
+  static async _generateAlertsForInsight(insight) {
+    const alertsToGenerate = [];
+
+    for (const [nutrientName, nutrient] of Object.entries(insight.nutrients)) {
+      const percentage = (nutrient.totalValue / nutrient.recommendedValue) * 100;
+      const status = this._determineStatus(
+        nutrient.totalValue,
+        nutrient.recommendedValue,
+      );
+
+      if (status === 'excess' || status === 'deficient') {
+        alertsToGenerate.push({
+          userId: insight.userId,
+          insightId: insight._id,
+          nutrientName,
+          alertType: status,
+          percentage,
+          severity: this._determineSeverity(status, nutrient),
+          critical: percentage < 30,
+        });
+      }
+    }
+    if (alertsToGenerate.length > 0) {
+      await Alert.generateAlerts(alertsToGenerate);
+    }
+  }
+
   static _calculateEndDate(type) {
     const now = new Date();
 
@@ -27,6 +81,9 @@ class InsightController {
 
       if (insight) {
         insight.active = false;
+
+        await this._generateAlertsForInsight(insight);
+
         await insight.save();
       }
       const endDate = this._calculateEndDate(type);
@@ -34,9 +91,11 @@ class InsightController {
       const nutrients = {};
       for (const [nutrientName, nutrient] of Object.entries(nutrientsData)) {
         if (nutrient.recommended.type === type) {
+          const amount = nutrient.recommended.amount ?? 0;
+          const recommendedValue = type === 'Micro' ? amount * 7 : amount;
           nutrients[nutrientName] = {
             totalValue: 0,
-            recommendedValue: nutrient.recommended.amount || 0,
+            recommendedValue,
             status: 'onTrack',
           };
         }
@@ -55,40 +114,11 @@ class InsightController {
     }
   }
 
-  static _determineStatus(totalValue, recommendedValue) {
-    if (totalValue < recommendedValue * 0.9) return 'deficient';
-    if (totalValue > recommendedValue * 1.1) return 'excess';
-    return 'onTrack';
-  }
-
-  static _determineSeverity(status, nutrient) {
-    if (nutrient.recommended === 0) {
-      return 'mild';
-    }
-
-    const percentage = nutrient.totalValue / nutrient.recommendedValue;
-
-    if (status === 'deficient') {
-      if (percentage < 0.5) return 'severe';
-      if (percentage < 0.8) return 'moderate';
-      return 'mild';
-    }
-
-    if (status === 'excess') {
-      if (percentage > 1.5) return 'severe';
-      if (percentage > 1.2) return 'moderate';
-      return 'mild';
-    }
-    return 'mild';
-  }
-
   static async updateInsight(insight, nutrientData) {
     try {
       if (!Array.isArray(nutrientData)) {
         throw new Error('Nutrient Data must be an array.');
       }
-
-      const alertsToGenerate = [];
 
       nutrientData.forEach((nutrient) => {
         if (!nutrient.name) return;
@@ -99,31 +129,13 @@ class InsightController {
         if (existingNutrient) {
           existingNutrient.totalValue += nutrient.value;
 
-          const newStatus = this._determineStatus(
+          existingNutrient.status = this._determineStatus(
             existingNutrient.totalValue,
             existingNutrient.recommendedValue,
           );
-
-          if (
-            (existingNutrient.status !== newStatus)
-            && (newStatus === 'excess' || newStatus === 'deficient')
-          ) {
-            alertsToGenerate.push({
-              userId: insight.userId,
-              nutrientName: nutrient.name,
-              alertType: newStatus,
-              status: 'pending',
-              severity: this._determineSeverity(newStatus, existingNutrient),
-            });
-          }
-          existingNutrient.status = newStatus;
         }
       });
       await insight.save();
-
-      if (alertsToGenerate.length > 0) {
-        await Alert.generateAlerts(alertsToGenerate);
-      }
 
       return insight;
     } catch (err) {
@@ -140,7 +152,6 @@ class InsightController {
     }
 
     const capitalizeType = type[0].toUpperCase() + type.slice(1);
-
     const query = { userId: req.user._id, type: capitalizeType };
 
     try {
