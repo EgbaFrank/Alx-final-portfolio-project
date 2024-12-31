@@ -2,9 +2,12 @@ import mongoose from 'mongoose';
 
 const alertSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
+  insightId: { type: mongoose.Schema.Types.ObjectId, ref: 'Insights', required: true },
   alertType: { type: String, enum: ['deficient', 'excess'], required: true },
   nutrientName: { type: String, required: true },
-  status: { type: String, enum: ['active', 'pending', 'resolved'], default: 'pending' },
+  critical: { type: Boolean, default: false },
+  percentage: { type: Number, min: 0, required: true },
+  status: { type: String, enum: ['active', 'resolved'], default: 'active' },
   severity: { type: String, enum: ['mild', 'moderate', 'severe'], required: true },
 }, { timestamps: true });
 
