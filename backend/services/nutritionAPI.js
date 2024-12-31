@@ -16,7 +16,7 @@ async function fetchNutrientData(foodName) {
       params: {
         api_key: USDA_API_KEY,
         query: foodName,
-        dataType: 'Foundation',
+        dataType: 'SR Legacy',
         pageSize: 1,
       },
     });
