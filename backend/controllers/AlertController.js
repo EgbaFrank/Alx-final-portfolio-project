@@ -4,6 +4,7 @@ class AlertController {
   static async generateAlerts(alerts) {
     try {
       await Alert.insertMany(alerts);
+      console.log("Alerts created!!!");
     } catch (err) {
       console.error(`Error generating alerts: ${err.message}`);
       throw err;
