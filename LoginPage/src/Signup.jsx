@@ -1,87 +1,30 @@
-import { useState } from 'react';
+import React from 'react';
 
-const Signup = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  });
-  const [error, setError] = useState('');
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const { name, email, password, confirmPassword } = formData;
-
-    
-    if (!name || !email || !password || !confirmPassword) {
-      setError('All fields are required.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Incorrect Password.');
-      return;
-    }
-
-    setError('');
-    console.log('Signup Data:', formData);
-  };
-
+const Signup = ({ switchToLogin }) => {
   return (
-    <div className="signup-container">
-      <h2>Signup</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Confirm Password:</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Signup</button>
+    <div style={styles.container}>
+      <h2>Sign Up</h2>
+      <form>
+        <input type="text" placeholder="Name" style={styles.input} />
+        <input type="email" placeholder="Email" style={styles.input} />
+        <input type="password" placeholder="Password" style={styles.input} />
+        <button style={styles.button}>Sign Up</button>
       </form>
+      <p>
+        Already have an account?{' '}
+        <span onClick={switchToLogin} style={styles.link}>
+          Log in
+        </span>
+      </p>
     </div>
   );
+};
+
+const styles = {
+  container: { textAlign: 'center', padding: '30px' },
+  input: { margin: '10px 0', padding: '10px', width: '100%' },
+  button: { padding: '10px 20px', background: 'blue', color: 'white' },
+  link: { color: 'blue', cursor: 'pointer' },
 };
 
 export default Signup;

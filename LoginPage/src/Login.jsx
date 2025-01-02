@@ -1,50 +1,29 @@
-import { useState } from 'react';
+import React from 'react';
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setError('Both fields are required.');
-    } else {
-      setError('');
-      console.log('Email:', email);
-      console.log('Password:', password);
-    }
-  };
-
+const Login = ({ switchToSignup }) => {
   return (
-    <div className="login-container">
+    <div style={styles.container}>
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-          />
-        </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Login</button>
+      <form>
+        <input type="email" placeholder="Email" style={styles.input} />
+        <input type="password" placeholder="Password" style={styles.input} />
+        <button style={styles.button}>Login</button>
       </form>
+      <p>
+        Don't have an account?{' '}
+        <span onClick={switchToSignup} style={styles.link}>
+          Sign up
+        </span>
+      </p>
     </div>
   );
 };
 
+const styles = {
+  container: { textAlign: 'center', padding: '20px' },
+  input: { margin: '10px 0', padding: '10px', width: '100%' },
+  button: { padding: '10px 20px', background: 'blue', color: 'white' },
+  link: { color: 'blue', cursor: 'pointer' },
+};
+
 export default Login;
-
-
