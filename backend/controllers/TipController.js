@@ -51,7 +51,7 @@ class TipController {
             nutrientName,
           });
         } catch (err) {
-          console.error(`Error generating tip for ${nutrientName}: ${err.message}`);
+          console.error(`Error generating tip for ${alert.nutrientName}: ${err.message}`);
           return null;
         }
       });
