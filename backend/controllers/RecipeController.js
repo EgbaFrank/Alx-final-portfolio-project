@@ -1,6 +1,7 @@
 import Recipe from '../models/Recipe.js';
 import fetchNutrientData from '../services/nutritionAPI.js';
 import nutrientsConfig from '../utils/nutrients.js';
+import { roundToDecimal } from '../utils/conversions.js';
 // import findExistingComp from '../utils/comp-utils.js';
 
 class RecipeController {
@@ -45,7 +46,7 @@ class RecipeController {
             return {
               name,
               unit: recommendedUnit,
-              value: (amount ?? 0) * (quantity / 100),
+              value: roundToDecimal((amount ?? 0) * (quantity / 100)),
             };
           });
 

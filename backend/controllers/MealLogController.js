@@ -1,6 +1,7 @@
 import MealLog from '../models/MealLog.js';
 import Recipe from '../models/Recipe.js';
 import Insight from './InsightController.js';
+import { roundToDecimal } from '../utils/conversions.js';
 
 class MealLogController {
   static async _processMealLog(userId, nutrients) {
@@ -49,7 +50,7 @@ class MealLogController {
       const scaledNutrientAggregate = recipe.nutrientPerServing.map((nutrient) => ({
         name: nutrient.name,
         unit: nutrient.unit,
-        value: nutrient.value * serving,
+        value: roundToDecimal(nutrient.value * serving),
       }));
       console.log(`Meallog nutrient for this serving:\n${JSON.stringify(scaledNutrientAggregate, null, 2)}`);
 
