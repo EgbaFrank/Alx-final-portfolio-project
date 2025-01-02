@@ -1,62 +1,9 @@
 import Insight from '../models/Insight.js';
-import Alert from './AlertController.js';
+import alertController from './AlertController.js';
 import nutrientsData from '../utils/nutrients.js';
+import determineStatus from '../utils/status-utils.js';
 
 class InsightController {
-  static _determineStatus(totalValue, recommendedValue) {
-    if (totalValue < recommendedValue * 0.8) return 'deficient';
-    if (totalValue > recommendedValue * 1.2) return 'excess';
-    return 'onTrack';
-  }
-
-  static _determineSeverity(status, nutrient) {
-    if (nutrient.recommended === 0) {
-      return 'mild';
-    }
-
-    const percentage = nutrient.totalValue / nutrient.recommendedValue;
-
-    if (status === 'deficient') {
-      if (percentage < 0.3) return 'severe';
-      if (percentage < 0.6) return 'moderate';
-      return 'mild';
-    }
-
-    if (status === 'excess') {
-      if (percentage > 1.7) return 'severe';
-      if (percentage > 1.4) return 'moderate';
-      return 'mild';
-    }
-    return 'mild';
-  }
-
-  static async _generateAlertsForInsight(insight) {
-    const alertsToGenerate = [];
-
-    for (const [nutrientName, nutrient] of insight.nutrients.entries()) {
-      const percentage = (nutrient.totalValue / nutrient.recommendedValue) * 100;
-      const status = this._determineStatus(
-        nutrient.totalValue,
-        nutrient.recommendedValue,
-      );
-
-      if (status === 'excess' || status === 'deficient') {
-        alertsToGenerate.push({
-          userId: insight.userId,
-          insightId: insight._id,
-          nutrientName,
-          alertType: status,
-          percentage,
-          severity: this._determineSeverity(status, nutrient),
-          critical: percentage < 20 || percentage > 200,
-        });
-      }
-    }
-    if (alertsToGenerate.length > 0) {
-      await Alert.generateAlerts(alertsToGenerate);
-    }
-  }
-
   static _calculateEndDate(type) {
     const now = new Date();
 
@@ -64,10 +11,10 @@ class InsightController {
       return new Date(now.setUTCHours(23, 59, 59, 999));
     } if (type === 'Micro') {
       return new Date(now.setUTCHours(23, 59, 59, 999)); // return to a week
-      /**const endOfWeek = new Date(now);
+      /** const endOfWeek = new Date(now);
       endOfWeek.setDate(now.getDate() + (7 - now.getDay()));
       endOfWeek.setUTCHours(23, 59, 59, 999);
-      return endOfWeek;**/
+      return endOfWeek;* */
     }
     throw new Error('Invalid type specified');
   }
@@ -82,22 +29,21 @@ class InsightController {
 
       if (insight) {
         insight.active = false;
-
-        await this._generateAlertsForInsight(insight);
-
+        await alertController.generateAlerts(insight);
         await insight.save();
       }
+
       const endDate = this._calculateEndDate(type);
 
       const nutrients = {};
       for (const [nutrientName, nutrient] of Object.entries(nutrientsData)) {
         if (nutrient.recommended.type === type) {
           const amount = nutrient.recommended.amount ?? 0;
-          const recommendedValue = type === 'Micro' ? amount : amount;  // Multiply by 7 for a week's value
+          const recommendedValue = type === 'Micro' ? amount : amount; // Multiply by 7 for a week's value
           nutrients[nutrientName] = {
             totalValue: 0,
             recommendedValue,
-            status: 'onTrack',
+            status: 'deficient',
           };
         }
       }
@@ -130,7 +76,7 @@ class InsightController {
         if (existingNutrient) {
           existingNutrient.totalValue += nutrient.value;
 
-          existingNutrient.status = this._determineStatus(
+          existingNutrient.status = determineStatus(
             existingNutrient.totalValue,
             existingNutrient.recommendedValue,
           );
