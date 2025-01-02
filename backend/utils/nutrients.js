@@ -38,7 +38,7 @@ const nutrients = {
       unit: 'MG',
       type: 'Micro',
     },
-    foodSources: ['Oranges', 'Strawberries', 'Bell peppers (red)', 'Broccoli'], 
+    foodSources: ['Oranges', 'Strawberries', 'Bell peppers (red)', 'Broccoli'],
   },
   Calcium: {
     usdaId: 1087,
