@@ -29,7 +29,11 @@ class InsightController {
 
       if (insight) {
         insight.active = false;
-        await alertController.generateAlerts(insight);
+
+        if (insight.type === 'Micro') {
+          await alertController.generateAlerts(insight);
+        }
+
         await insight.save();
       }
 
