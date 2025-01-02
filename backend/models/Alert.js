@@ -7,7 +7,7 @@ const alertSchema = new mongoose.Schema({
   nutrientName: { type: String, required: true },
   critical: { type: Boolean, default: false },
   percentage: { type: Number, min: 0, required: true },
-  status: { type: String, enum: ['active', 'resolved'], default: 'active' },
+  active: { type: Boolean, default: true },
   severity: { type: String, enum: ['mild', 'moderate', 'severe'], required: true },
 }, { timestamps: true });
 
