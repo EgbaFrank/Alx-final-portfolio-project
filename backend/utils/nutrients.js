@@ -65,7 +65,7 @@ const nutrients = {
       unit: 'MG',
       type: 'Micro',
     },
-    foodSources: ['Fatty fish (salmon, tuna)', 'Fortified milk', 'Fortified orange juice', 'Egg yolks'],
+    foodSources: ['Sunflower seeds', 'Almonds', 'Wheat germ oil', 'Spinach'],
   },
   Magnesium: {
     usdaId: 1090,
@@ -110,7 +110,7 @@ const nutrients = {
       unit: 'UG',
       type: 'Micro',
     },
-    foodSources: ['Sunflower seeds', 'Almonds', 'Wheat germ oil', 'Spinach'],
+    foodSources: ['Fatty fish (salmon, tuna)', 'Fortified milk', 'Fortified orange juice', 'Egg yolks'],
   },
   Potassium: {
     usdaId: 1092,
