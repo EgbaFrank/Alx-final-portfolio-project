@@ -58,11 +58,11 @@ const nutrients = {
     },
     foodSources: ['Red meat (beef)', 'Spinach', 'Lentils', 'Fortified cereals'],
   },
-  'Vitamin D': {
-    usdaId: 1106,
+  'Vitamin E': {
+    usdaId: 1109,
     recommended: {
       amount: 15,
-      unit: 'UG',
+      unit: 'MG',
       type: 'Micro',
     },
     foodSources: ['Fatty fish (salmon, tuna)', 'Fortified milk', 'Fortified orange juice', 'Egg yolks'],
@@ -86,13 +86,13 @@ const nutrients = {
     foodSources: ['Oysters', 'Beef', 'Pumpkin seeds', 'Chickpeas'],
   },
   'Vitamin A': {
-    usdaId: 1104,
+    usdaId: 1106,
     recommended: {
       amount: 900,
       unit: 'UG',
       type: 'Micro',
     },
-    foodSources: ['Carrots', 'Sweet potatoes', 'Spinach', 'Kale'],
+    foodSources: ['Carrots', 'Sweet potatoes', 'Spinach', 'Mangoes'],
   },
   'Vitamin B12': {
     usdaId: 1178,
@@ -103,11 +103,11 @@ const nutrients = {
     },
     foodSources: ['Beef liver', 'Clams', 'Fortified nutritional yeast', 'Fortified milk'],
   },
-  'Vitamin E': {
+  'Vitamin D': {
     usdaId: 1114,
     recommended: {
       amount: 15,
-      unit: 'MG',
+      unit: 'UG',
       type: 'Micro',
     },
     foodSources: ['Sunflower seeds', 'Almonds', 'Wheat germ oil', 'Spinach'],
