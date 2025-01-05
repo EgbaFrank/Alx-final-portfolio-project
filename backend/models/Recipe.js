@@ -9,7 +9,7 @@ const nutrientSchema = new mongoose.Schema({
 // comp: Component
 const compSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  quantity: { type: Number, required: true },
+  quantity: { type: Number, required: true, min: 1 },
   unit: { type: String, required: true, default: 'G' },
   nutrients: [nutrientSchema],
 }, { _id: false });
