@@ -23,6 +23,12 @@ tags:
     description: Routes for fetching and managing alerts.
   - name: Tips
     description: Routes for personalized dietary recommendations.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 paths:
   /users/register:
     post:
@@ -42,6 +48,12 @@ paths:
                 lastname:
                   type: string
                   example: Doe
+                age:
+                  type: number
+                  example: 21
+                gender:
+                  type: string
+                  example: male
                 email:
                   type: string
                   example: user@example.com
@@ -49,6 +61,7 @@ paths:
                   type: string
                   example: password123
               required:
+                - age
                 - email
                 - password
       responses:
@@ -109,6 +122,8 @@ paths:
       summary: Get user details.
       tags:
         - Users
+      security:
+        - bearerAuth: []
       parameters:
         - in: header
           name: Authorization
@@ -173,8 +188,6 @@ paths:
                   error:
                     type: string
                     example: Unauthorized. Bearer token required.
-      security:
-        - bearerAuth: []
 
     put:
       summary: Update user details.
