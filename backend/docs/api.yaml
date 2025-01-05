@@ -124,14 +124,6 @@ paths:
         - Users
       security:
         - bearerAuth: []
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-          description: Bearer token for authentication
       responses:
         '200':
           description: Successfully retrieved user details.
@@ -193,14 +185,6 @@ paths:
       summary: Update user details.
       tags:
         - Users
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-          description: Bearer token for authentication
       requestBody:
         required: true
         content:
@@ -252,14 +236,6 @@ paths:
         - Recipes
       security:
         - bearerAuth: []  # Requires Authorization header with Bearer token
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-          description: Bearer token for authentication
       requestBody:
         required: true
         content:
@@ -374,13 +350,6 @@ paths:
       security:
         - bearerAuth: []  # Requires Authorization header with Bearer token
       parameters:
-        - in: header
-          name: Authorization
-          required: true
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-          description: Bearer token for authentication
         - in: path
           name: recipeID
           required: true
@@ -424,14 +393,6 @@ paths:
         - Recipes
       security:
         - bearerAuth: []  # Requires Authorization header with Bearer token
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-          description: Bearer token for authentication
       responses:
         '200':
           description: Successfully retrieved saved recipes
@@ -444,7 +405,6 @@ paths:
                   properties:
                     id:
                       type: string
-                      example: 64e8c1a3f45b4d1234abcd56
                     name:
                       type: string
                       example: Grilled Chicken Salad
@@ -485,20 +445,12 @@ paths:
       security:
         - bearerAuth: []  # Requires Authorization header with Bearer token
       parameters:
-        - in: header
-          name: Authorization
-          required: true
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-          description: Bearer token for authentication
         - in: query
           name: startDate
           required: false
           schema:
             type: string
             format: date
-            example: 2025-01-01
           description: Filter logs from this start date (YYYY-MM-DD)
         - in: query
           name: endDate
@@ -506,21 +458,18 @@ paths:
           schema:
             type: string
             format: date
-            example: 2025-01-31
           description: Filter logs up to this end date (YYYY-MM-DD)
         - in: query
           name: page
           required: false
           schema:
             type: integer
-            example: 1
           description: The page number for pagination
         - in: query
           name: limit
           required: false
           schema:
             type: integer
-            example: 10
           description: The number of logs per page
       responses:
         '200':
@@ -551,15 +500,12 @@ paths:
                             properties:
                               name:
                                 type: string
-                                example: Iron
                                 description: The name of the nutrient (e.g., Iron, Vitamin C, Protein, etc.)
                               value:
                                 type: number
-                                example: 12
                                 description: Nutrient value for the given item
                               unit:
                                 type: string
-                                example: mg
                                 description: Unit of measurement for the nutrient (e.g., mg, g, ug)
                             example:
                               - name: Iron
@@ -614,14 +560,6 @@ paths:
         - Meal Logs
       security:
         - bearerAuth: []  # Requires Authorization header with Bearer token
-      parameters:
-        - in: header
-          name: Authorization
-          required: true
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-          description: Bearer token for authentication
       requestBody:
         required: true
         content:
@@ -632,7 +570,6 @@ paths:
                 recipeID:
                   type: string
                   description: The ID of the recipe to be logged
-                  example: 64e8c1a3f45b4d1234abcd56
                 mealType:
                   type: string
                   description: The type of meal being logged
@@ -732,13 +669,6 @@ paths:
             type: integer
             example: 10
           description: The number of results per page.
-        - name: Authorization
-          in: header
-          required: true
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-          description: Bearer token for authentication.
       responses:
         200:
           description: A list of insights with pagination details.
@@ -847,13 +777,6 @@ paths:
           schema:
             type: string
             enum: [Macro, Micro]
-        - name: Authorization
-          in: header
-          required: true
-          description: Bearer token for authentication
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       responses:
         '200':
           description: Successful response with the user's latest insights
@@ -971,13 +894,6 @@ paths:
           schema:
             type: integer
             example: 10
-        - name: Authorization
-          in: header
-          required: true
-          description: Bearer token for authentication
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       responses:
         '200':
           description: Successful response with a list of user's alerts
@@ -1098,13 +1014,6 @@ paths:
           schema:
             type: integer
             example: 10
-        - name: Authorization
-          in: header
-          required: true
-          description: Bearer token for authentication.
-          schema:
-            type: string
-            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       responses:
         '200':
           description: Successful response with a list of user's tips.
