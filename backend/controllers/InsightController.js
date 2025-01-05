@@ -122,15 +122,17 @@ class InsightController {
   static async getInsights(req, res) {
     const {
       startDate, endDate, type, limit = 10, page = 1,
-    } = req.body;
+    } = req.query;
 
     const userId = req.user._id;
 
-    if (!type || !['Micro', 'Macro'].includes(type)) {
-      return res.status(400).json({ error: 'Type property must be specified as either "Macro" or "Micro".' });
+    if (!type || !['micro', 'macro'].includes(type)) {
+      return res.status(400).json({ error: 'Type property must be specified as either "macro" or "micro".' });
     }
 
-    const query = { userId, type };
+    const capitalizeType = type[0].toUpperCase() + type.slice(1);
+
+    const query = { userId, type: capitalizeType };
 
     const pageNumber = parseInt(page, 10) || 1;
     const limitNumber = parseInt(limit, 10) || 10;
