@@ -71,7 +71,7 @@ class UserController {
 
   static async getUser(req, res) {
     try {
-      const { user } = req; // populated by authMiddleware
+      const user = await req.user.populate('recipes', 'id name');  // populated by authMiddleware
 
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
