@@ -4,7 +4,7 @@ import User from '../models/User.js';
 class UserController {
   static async registerUser(req, res) {
     const {
-      firstname, lastname, email, password,
+      firstname, lastname, age, gender, email, password,
     } = req.body;
     if (!email || !email.includes('@')) {
       return res.status(401).json({ error: 'Missing or invalid email' });
@@ -12,6 +12,10 @@ class UserController {
 
     if (!password) {
       return res.status(401).json({ error: 'Missing password' });
+    }
+
+    if (!age) {
+      return res.status(401).json({ error: 'Missing age' });
     }
 
     try {
@@ -22,7 +26,7 @@ class UserController {
       }
 
       const user = new User({
-        firstname, lastname, email, password,
+        firstname, lastname, age, gender, email, password
       });
 
       await user.save();
