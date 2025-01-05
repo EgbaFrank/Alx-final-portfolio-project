@@ -653,7 +653,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: [Macro, Micro]
+            enum: [macro, micro]
           description: Specifies the type of insights to fetch. Must be "Macro" or "Micro".
         - name: page
           in: query
@@ -687,7 +687,7 @@ paths:
                           example: 648efacb9f4b8f33b0007a5d
                         type:
                           type: string
-                          example: Macro
+                          example: Micro
                         endDate:
                           type: string
                           format: date
@@ -776,7 +776,7 @@ paths:
           description: The type of insights to retrieve (Macro or Micro)
           schema:
             type: string
-            enum: [Macro, Micro]
+            enum: [macro, micro]
       responses:
         '200':
           description: Successful response with the user's latest insights
@@ -790,8 +790,8 @@ paths:
                     example: "64dabc34f2e9b1234567890a"
                   type:
                     type: string
-                    enum: [Macro, Micro]
-                    example: "Macro"
+                    enum: [macro, micro]
+                    example: "macro"
                   endDate:
                     type: string
                     format: date
