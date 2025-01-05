@@ -47,7 +47,7 @@ class UserController {
       const user = await User.findOne({ email });
 
       if (!user) {
-        return res.status(500).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'User not found' });
       }
 
       const isMatch = await user.comparePassword(password);
@@ -98,7 +98,7 @@ class UserController {
         req.user._id,
         updateFields,
         { new: true, runValidators: true },
-      );
+      ).lean();
 
       if (!updatedUser) {
         return res.status(404).json({ error: 'User not found' });

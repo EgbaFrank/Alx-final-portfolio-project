@@ -14,7 +14,7 @@ class InsightController {
       /** const endOfWeek = new Date(now);
       endOfWeek.setDate(now.getDate() + (7 - now.getDay()));
       endOfWeek.setUTCHours(23, 59, 59, 999);
-      return endOfWeek;* */
+      return endOfWeek;**/
     }
     throw new Error('Invalid type specified');
   }

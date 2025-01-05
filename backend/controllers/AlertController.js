@@ -88,7 +88,8 @@ class AlertController {
       const alerts = await Alert.find(query)
         .sort({ createdAt: -1 })
         .skip((pageNumber - 1) * limitNumber)
-        .limit(parseInt(limit, 10));
+        .limit(parseInt(limit, 10))
+        .lean();
 
       const total = await Alert.countDocuments(query);
 
