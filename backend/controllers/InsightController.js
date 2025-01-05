@@ -10,11 +10,10 @@ class InsightController {
     if (type === 'Macro') {
       return new Date(now.setUTCHours(23, 59, 59, 999));
     } if (type === 'Micro') {
-      return new Date(now.setUTCHours(23, 59, 59, 999)); // return to a week
-      /** const endOfWeek = new Date(now);
+      const endOfWeek = new Date(now);
       endOfWeek.setDate(now.getDate() + (7 - now.getDay()));
       endOfWeek.setUTCHours(23, 59, 59, 999);
-      return endOfWeek;**/
+      return endOfWeek;
     }
     throw new Error('Invalid type specified');
   }
@@ -43,7 +42,7 @@ class InsightController {
       for (const [nutrientName, nutrient] of Object.entries(nutrientsData)) {
         if (nutrient.recommended.type === type) {
           const amount = nutrient.recommended.amount ?? 0;
-          const recommendedValue = type === 'Micro' ? amount : amount; // Multiply by 7 for a week's value
+          const recommendedValue = type === 'Micro' ? amount * 7 : amount;
           nutrients[nutrientName] = {
             totalValue: 0,
             recommendedValue,
