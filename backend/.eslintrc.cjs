@@ -14,7 +14,7 @@ module.exports = {
     SharedArrayBuffer: 'readonly',
   },
   parserOptions: {
-    ecmaVersion: 2018,    // Enable parsing of modern JavaScript syntax
+    ecmaVersion: 2020,    // Enable parsing of modern JavaScript syntax
     sourceType: 'module', // Enable ES modules (import/export)
   },
   plugins: ['jest'],  // Jest plugin for linting tests
@@ -28,6 +28,14 @@ module.exports = {
       'LabeledStatement',
       'WithStatement',
     ],
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        'js': 'always',
+        'jsx': 'always',
+      }
+    ]
   },
   overrides: [
     {

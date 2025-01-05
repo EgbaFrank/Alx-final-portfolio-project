@@ -39,12 +39,20 @@
    cd Alx-final-portfolio-project
    ```
 
-2. **Install dependencies**:
+2. **Install frontend dependencies**:
    ```bash
+   cd frontend
    npm install
    ```
 
-3. **Set up environment variables**:
+3. **Install backend dependencies**:
+   ```bash
+   cd backend
+   npm install
+   ```
+
+4. **Set up environment variables**:
+   create a .env file with the following variables:
    ```bash
    PORT=5000
    MONGO_URI=your_mongodb_connection_string
@@ -52,12 +60,17 @@
    API_KEY=your_food_api_key
    ```
 
-4. **Run the application**:
+5. **Run the backend server**:
    ```bash
    npm start
    ```
 
-5. **Access the app**:
+6. **Run the frontend server in a new window**:
+   ```bash
+   npm run dev
+   ```
+
+7. **Access the app**:
    Open your browser and navigate to `http://localhost:5000`.
 
 ## How It Works
@@ -96,7 +109,7 @@ Refer to our [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 - [x] Set up project environment and GitHub repo  
 - [x] Create basic React app structure  
-- [ ] Implement user authentication  
+- [x] Implement user authentication  
 - [ ] Integrate external API for nutrient data  
 - [ ] Develop meal logging interface  
 - [ ] Create dynamic charts for data visualization  

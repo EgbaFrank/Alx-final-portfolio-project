@@ -19,7 +19,7 @@ We use a **feature-branch** workflow to keep our `main` branch stable and ready 
 ### **Branching Process:**
 1. **Create a Feature Branch**: 
    - Branch off from `dev` using a descriptive name.
-   - Example: `feature/socket-io-integration`, `bugfix/fix-database-error`.
+   - Example: `feature/database-models-schema`, `bugfix/fix-database-error`.
 
 2. **Work on Your Feature**:
    - Implement your feature or bugfix in the feature branch.
@@ -44,6 +44,7 @@ We follow a **consistent commit message format** to maintain clear and informati
 
 ### **Types of Changes:**
 - **`feat:`** A new feature.
+- **`update:`** Improve existing functionality
 - **`fix:`** A bug fix.
 - **`docs:`** Documentation updates.
 - **`style:`** Code style changes (formatting, etc.).

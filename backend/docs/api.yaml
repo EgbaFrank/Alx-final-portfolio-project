@@ -1,0 +1,1077 @@
+openapi: 3.0.0
+info:
+  title: DailyNutri API Documentation
+  description: |
+    A detailed API reference for the DailyNutri app, which helps users track their daily nutrient intake, create meal logs, and get personalized insights.
+  version: 1.0.0
+  contact:
+    name: DailyNutri Team
+    email: support@dailynutri.com
+servers:
+  - url: http://localhost:5001/api
+    description: Development Server
+tags:
+  - name: Users
+    description: Routes for user authentication and profile management.
+  - name: Insights
+    description: Routes to fetch daily/weekly nutrient insights.
+  - name: Meal Logs
+    description: Routes to create and manage meal logs.
+  - name: Recipes
+    description: Routes for managing recipes and their components.
+  - name: Alerts
+    description: Routes for fetching and managing alerts.
+  - name: Tips
+    description: Routes for personalized dietary recommendations.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /users/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  example: John
+                lastname:
+                  type: string
+                  example: Doe
+                age:
+                  type: number
+                  example: 21
+                gender:
+                  type: string
+                  example: male
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: password123
+              required:
+                - age
+                - email
+                - password
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          description: Missing or invalid credentials
+        '400':
+          description: User already exists.
+      security: []
+
+  /users/login:
+    post:
+      summary: Authenticate a user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          description: Missing or invalid credentials
+        '404':
+          description: User not found
+      security: []
+
+  /users/me:
+    get:
+      summary: Get user details.
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully retrieved user details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: 63aafc47a7f1a20b98251234
+                  email:
+                    type: string
+                    example: user@example.com
+                  age:
+                    type: integer
+                    example: 28
+                  preferences:
+                    type: object
+                    properties:
+                      allergies:
+                        type: array
+                        items:
+                          type: string
+                          example: peanuts
+                      vegetarian:
+                        type: boolean
+                        example: true
+                  gender:
+                    type: string
+                    enum:
+                      - male
+                      - female
+                      - not specified
+                    example: male
+                  recipes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: 63b7fc91a8f9c32112345678
+                        name:
+                          type: string
+                          example: Mango Smoothie
+        '401':
+          description: Unauthorized. Token missing or invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized. Bearer token required.
+
+    put:
+      summary: Update user details.
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                  example: John
+                lastname:
+                  type: string
+                  example: Doe
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                gender:
+                  type: string
+                  example: male
+                age:
+                  type: integer
+                  example: 23
+      responses:
+        '200':
+          description: Successfully updated user details.
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {}
+        '401':
+          description: Unauthorized. Token missing or invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized. Bearer token required.
+      security:
+        - bearerAuth: []
+
+  /recipes:
+    post:
+      summary: Add a recipe
+      tags:
+        - Recipes
+      security:
+        - bearerAuth: []  # Requires Authorization header with Bearer token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Fruit Salad
+                servings:
+                  type: integer
+                  example: 2
+                comps:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Banana
+                      quantity:
+                        type: number
+                        format: float
+                        example: 150
+                      unit:
+                        type: string
+                        example: G
+              example:
+                name: Fruit Salad
+                servings: 2
+                comps:
+                  - name: Banana
+                    quantity: 150
+                    unit: G
+                  - name: Apple
+                    quantity: 100
+                    unit: G
+                  - name: Grapes
+                    quantity: 50
+                    unit: G
+                  - ...
+      responses:
+        '201':
+          description: Recipe created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: 64e8c1a3f45b4d1234abcd56
+                  name:
+                    type: string
+                    example: Fruit Salad
+                  servings:
+                    type: integer
+                    example: 2
+                  nutrientPerServing:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: Carbohydrate
+                        unit:
+                          type: string
+                          example: G
+                        value:
+                          type: number
+                          format: float
+                          example: 15.7
+                      example:
+                        - name: Carbohydrate
+                          unit: G
+                          value: 15.7
+                        - name: Protein
+                          unit: G
+                          value: 1.2
+                        - name: Vitamin C
+                          unit: MG
+                          value: 12.5
+                        - ...
+        '400':
+          description: Invalid or missing data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing data
+        '401':
+          description: Unauthorized - Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing token
+
+  /recipes/save/{recipeID}:
+    post:
+      summary: Add a recipe to the user's saved recipe list
+      tags:
+        - Recipes
+      security:
+        - bearerAuth: []  # Requires Authorization header with Bearer token
+      parameters:
+        - in: path
+          name: recipeID
+          required: true
+          schema:
+            type: string
+            example: 64e8c1a3f45b4d1234abcd56
+          description: The unique ID of the recipe to be saved
+      responses:
+        '201':
+          description: Recipe successfully added to the saved list
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {}
+        '400':
+          description: Invalid recipe ID or recipe already saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid recipe ID or recipe already saved
+        '401':
+          description: Unauthorized - Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing token
+
+  /recipes/saved:
+    get:
+      summary: Retrieve saved recipes
+      tags:
+        - Recipes
+      security:
+        - bearerAuth: []  # Requires Authorization header with Bearer token
+      responses:
+        '200':
+          description: Successfully retrieved saved recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                      example: Grilled Chicken Salad
+                    servings:
+                      type: integer
+                      example: 1
+                    nutrientPerServing:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: Iron
+                          value:
+                            type: number
+                            format: float
+                            example: 54
+                          unit:
+                            type: string
+                            example: MG
+        '401':
+          description: Unauthorized - Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing token
+
+  /meallogs:
+    get:
+      summary: Get a user's meal logs
+      tags:
+        - Meal Logs
+      security:
+        - bearerAuth: []  # Requires Authorization header with Bearer token
+      parameters:
+        - in: query
+          name: startDate
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Filter logs from this start date (YYYY-MM-DD)
+        - in: query
+          name: endDate
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Filter logs up to this end date (YYYY-MM-DD)
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+          description: The page number for pagination
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+          description: The number of logs per page
+      responses:
+        '200':
+          description: List of meal logs with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mealLogs:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        recipeID:
+                          type: string
+                          example: 64e8c1a3f45b4d1234abcd56
+                        serving:
+                          type: integer
+                          example: 2
+                        mealType:
+                          type: string
+                          example: Breakfast
+                        nutrients:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                description: The name of the nutrient (e.g., Iron, Vitamin C, Protein, etc.)
+                              value:
+                                type: number
+                                description: Nutrient value for the given item
+                              unit:
+                                type: string
+                                description: Unit of measurement for the nutrient (e.g., mg, g, ug)
+                            example:
+                              - name: Iron
+                                value: 12
+                                unit: mg
+                              - name: Calcium
+                                value: 54
+                                unit: mg
+                              - name: Vitamin C
+                                value: 15.2
+                                unit: mg
+                              - ...
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 100
+                      page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+                      pages:
+                        type: integer
+                        example: 10
+        '401':
+          description: Unauthorized - Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing token
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Server error
+
+    post:
+      summary: Log a meal
+      tags:
+        - Meal Logs
+      security:
+        - bearerAuth: []  # Requires Authorization header with Bearer token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipeID:
+                  type: string
+                  description: The ID of the recipe to be logged
+                mealType:
+                  type: string
+                  description: The type of meal being logged
+                  enum:
+                    - Breakfast
+                    - Lunch
+                    - Dinner
+                    - Snacks
+                  example: Lunch
+                serving:
+                  type: integer
+                  description: The number of servings
+                  example: 1
+              required:
+                - recipeID
+                - mealType
+                - serving
+      responses:
+        '201':
+          description: Meal successfully logged
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {}
+        '400':
+          description: Invalid or missing request body value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing request body value
+        '404':
+          description: Recipe not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Recipe not found
+        '401':
+          description: Unauthorized - Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing token
+
+  /insights:
+    get:
+      summary: Get a user's insights
+      tags:
+        - Insights
+      security:
+        - bearerAuth: []  # Requires Authorization header with Bearer token
+      parameters:
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: The start date for filtering insights.
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: The end date for filtering insights.
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [macro, micro]
+          description: Specifies the type of insights to fetch. Must be "Macro" or "Micro".
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 1
+          description: The page number for paginated results.
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 10
+          description: The number of results per page.
+      responses:
+        200:
+          description: A list of insights with pagination details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  insights:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: string
+                          example: 648efacb9f4b8f33b0007a5d
+                        type:
+                          type: string
+                          example: Micro
+                        endDate:
+                          type: string
+                          format: date
+                          example: 2025-01-05
+                        active:
+                          type: boolean
+                          example: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: 2025-01-01T12:00:00Z
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          example: 2025-01-02T14:00:00Z
+                        nutrients:
+                          type: object
+                          additionalProperties:
+                            type: object
+                            properties:
+                              totalValue:
+                                type: number
+                                example: 50
+                              recommendedValue:
+                                type: number
+                                example: 90
+                              status:
+                                type: string
+                                example: "deficient"
+                            example:
+                              "Vitamin C":
+                                totalValue: 50
+                                recommendedValue: 90
+                                status: "deficient"
+                              "Calcium":
+                                totalValue: 1200
+                                recommendedValue: 1000
+                                status: "excess"
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 30
+                      page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+                      pages:
+                        type: integer
+                        example: 3
+        400:
+          description: Type property must be specified as either "Macro" or "Micro".
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Type property must be specified as either "Macro" or "Micro".
+        500:
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Server error.
+
+  /insights/latest/{type}:
+    get:
+      summary: Get a user's latest insights
+      tags:
+        - Insights
+      security:
+        - bearerAuth: []  # Requires Authorization header with Bearer token
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: The type of insights to retrieve (Macro or Micro)
+          schema:
+            type: string
+            enum: [macro, micro]
+      responses:
+        '200':
+          description: Successful response with the user's latest insights
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    example: "64dabc34f2e9b1234567890a"
+                  type:
+                    type: string
+                    enum: [macro, micro]
+                    example: "macro"
+                  endDate:
+                    type: string
+                    format: date
+                    example: "2025-01-04"
+                  active:
+                    type: boolean
+                    example: true
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2025-01-01T12:00:00Z"
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: "2025-01-03T18:30:00Z"
+                  nutrients:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        totalValue:
+                          type: number
+                          example: 50
+                        recommendedValue:
+                          type: number
+                          example: 90
+                        status:
+                          type: string
+                          example: "deficient"
+                    example:
+                      "Vitamin C":
+                        totalValue: 50
+                        recommendedValue: 90
+                        status: "deficient"
+                      "Calcium":
+                        totalValue: 1200
+                        recommendedValue: 1000
+                        status: "excess"
+                      "Iron":
+                        totalValue: 8
+                        recommendedValue: 18
+                        status: "deficient"
+        '400':
+          description: Invalid type parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Type parameter must be specified as either 'Macro' or 'Micro'."
+        '404':
+          description: No insights found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No insights found for specified type."
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error."
+
+  /alerts:
+    get:
+      summary: Get a user's alerts
+      tags:
+        - Alerts
+      security:
+        - bearerAuth: []  # Requires Authorization header with Bearer token
+      parameters:
+        - name: active
+          in: query
+          required: false
+          description: Filter by active alerts (true/false). Defaults to true.
+          schema:
+            type: boolean
+            default: true
+        - name: page
+          in: query
+          required: false
+          description: The page number for pagination
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          required: false
+          description: The number of items per page
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: Successful response with a list of user's alerts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: string
+                          example: "64dabc34f2e9b1234567890a"
+                        insightId:
+                          type: string
+                          example: "64def1234567890aefab567c"
+                        alertType:
+                          type: string
+                          enum: [deficient, excess]
+                          example: "deficient"
+                        nutrientName:
+                          type: string
+                          example: "Vitamin D"
+                        critical:
+                          type: boolean
+                          example: true
+                        percentage:
+                          type: number
+                          format: float
+                          example: 45.5
+                        severity:
+                          type: string
+                          enum: [mild, moderate, severe]
+                          example: "severe"
+                        active:
+                          type: boolean
+                          example: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2025-01-03T12:00:00Z"
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          example: "2025-01-04T15:30:00Z"
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 50
+                      page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+                      pages:
+                        type: integer
+                        example: 5
+        '400':
+          description: Invalid page or limit values
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid page or limit values."
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error."
+
+  /tips:
+    get:
+      summary: Get a user's tips
+      tags:
+        - Tips
+      security:
+        - bearerAuth: []  # Requires Authorization header with Bearer token
+      parameters:
+        - name: nutrient
+          in: query
+          required: false
+          description: Filter tips by nutrient name.
+          schema:
+            type: string
+            example: "Calcium"
+        - name: active
+          in: query
+          required: false
+          description: Filter by active tips (true/false). Defaults to true.
+          schema:
+            type: boolean
+            default: true
+        - name: page
+          in: query
+          required: false
+          description: The page number for pagination.
+          schema:
+            type: integer
+            example: 1
+        - name: limit
+          in: query
+          required: false
+          description: The number of items per page.
+          schema:
+            type: integer
+            example: 10
+      responses:
+        '200':
+          description: Successful response with a list of user's tips.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tips:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: string
+                          example: "64dabc34f2e9b1234567890a"
+                        alertId:
+                          type: string
+                          example: "64def1234567890aefab567c"
+                        nutrientName:
+                          type: string
+                          example: "Vitamin D"
+                        active:
+                          type: boolean
+                          example: true
+                        message:
+                          type: string
+                          example: "Consider adding fortified milk to your diet to increase Vitamin D levels."
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2025-01-03T12:00:00Z"
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          example: "2025-01-04T15:30:00Z"
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 50
+                      page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+                      pages:
+                        type: integer
+                        example: 5
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal server error."
