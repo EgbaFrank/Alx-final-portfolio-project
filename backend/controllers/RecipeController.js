@@ -70,7 +70,7 @@ class RecipeController {
 
       const savedRecipe = await newRecipe.save();
 
-      return res.status(200).json({
+      return res.status(201).json({
         id: savedRecipe._id,
         name: savedRecipe.name,
         servings: savedRecipe.servings,
