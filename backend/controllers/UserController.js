@@ -26,7 +26,7 @@ class UserController {
       }
 
       const user = new User({
-        firstname, lastname, age, gender, email, password
+        firstname, lastname, age, gender, email, password,
       });
 
       await user.save();
@@ -71,7 +71,7 @@ class UserController {
 
   static async getUser(req, res) {
     try {
-      const user = await req.user.populate('recipes', 'id name');  // populated by authMiddleware
+      const user = await req.user.populate('recipes', 'id name'); // populated by authMiddleware
 
       if (!user) {
         return res.status(404).json({ error: 'User not found' });

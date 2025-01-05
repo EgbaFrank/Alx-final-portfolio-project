@@ -1,7 +1,7 @@
 import Recipe from '../models/Recipe.js';
 import fetchNutrientData from '../services/nutritionAPI.js';
 import nutrientsConfig from '../utils/nutrients.js';
-import { roundToDecimal } from '../utils/conversions.js';
+import roundToDecimal from '../utils/conversions.js';
 // import findExistingComp from '../utils/comp-utils.js';
 
 class RecipeController {

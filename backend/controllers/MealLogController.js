@@ -1,7 +1,7 @@
 import MealLog from '../models/MealLog.js';
 import Recipe from '../models/Recipe.js';
 import Insight from './InsightController.js';
-import { roundToDecimal } from '../utils/conversions.js';
+import roundToDecimal from '../utils/conversions.js';
 
 class MealLogController {
   static async _processMealLog(userId, nutrients) {

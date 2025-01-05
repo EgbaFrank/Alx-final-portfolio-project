@@ -1,6 +1,6 @@
 import axios from 'axios';
 import nutrients from '../utils/nutrients.js';
-import { roundToDecimal } from '../utils/conversions.js';
+import roundToDecimal from '../utils/conversions.js';
 
 const USDA_BASE_URL = 'https://api.nal.usda.gov/fdc/v1';
 

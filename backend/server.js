@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import connectDB from './utils/db.js';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
+import connectDB from './utils/db.js';
 
 import userRoutes from './routes/userRoutes.js';
 import mealLogRoutes from './routes/mealLogRoutes.js';
