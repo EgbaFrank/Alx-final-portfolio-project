@@ -56,14 +56,14 @@ form {
 input { 
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid #1e1e1e; ;
+  border: 1px solid #1e1e1e;
   border-radius: 4px;
   background-color: #eee;
   color: black
 }
 
 input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(0, 225,0);
 }
 
 button {
