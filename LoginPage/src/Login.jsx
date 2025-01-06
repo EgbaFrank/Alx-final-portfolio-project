@@ -21,7 +21,7 @@ const Login = ({ switchToSignup }) => {
 
 const styles = {
   container: { textAlign: 'center', padding: '20px' },
-  input: { margin: '10px 0', padding: '10px', width: '100%' },
+  input: { margin: '10px 0', padding: '10px', width: '80%' },
   button: { padding: '10px 20px', background: 'blue', color: 'white' },
   link: { color: 'blue', cursor: 'pointer' },
 };
