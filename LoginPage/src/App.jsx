@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Login from './Login';
 import Signup from './Signup';
+import Header from './Header';
 
 const App = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,6 +11,7 @@ const App = () => {
 
   return (
     <div style={styles.app}>
+      <Header /> {/* Adding the Header component here */}
       {isLogin ? (
         <Login switchToSignup={switchToSignup} />
       ) : (
@@ -20,7 +22,7 @@ const App = () => {
 };
 
 const styles = {
-  app: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f0f0f0' },
+  app: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f0f0f0', flexDirection: 'column' },
 };
 
 export default App;

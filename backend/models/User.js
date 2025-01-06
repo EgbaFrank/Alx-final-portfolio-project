@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   },
   password: { type: String, required: true },
   age: { type: Number, min: 0, required: true },
-  gender: { type: String, enum: ['male', 'female'], default: 'not specified' },
+  gender: { type: String, enum: ['male', 'female', 'not specified'], default: 'not specified' },
   preferences: {
     vegetarian: { type: Boolean, default: false },
     allergies: { type: [String], default: [] },

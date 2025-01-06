@@ -7,12 +7,13 @@ const insightSchema = new mongoose.Schema({
   nutrients: {
     type: Map,
     of: new mongoose.Schema({
+      _id: false,
       totalValue: { type: Number, default: 0 },
       recommendedValue: { type: Number, required: true },
       status: { type: String, enum: ['deficient', 'excess', 'onTrack'], default: 'onTrack' },
     }),
   },
-  archived: { type: Boolean, default: false },
+  active: { type: Boolean, default: true },
 }, { timestamps: true });
 
 insightSchema.set('toJSON', {

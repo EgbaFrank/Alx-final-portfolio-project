@@ -1,10 +1,37 @@
 import MealLog from '../models/MealLog.js';
 import Recipe from '../models/Recipe.js';
+import Insight from './InsightController.js';
+import roundToDecimal from '../utils/conversions.js';
 
 class MealLogController {
+  static async _processMealLog(userId, nutrients) {
+    try {
+      const [macroInsight, microInsight] = await Promise.all([
+        Insight.getActiveInsight(userId, 'Macro'),
+        Insight.getActiveInsight(userId, 'Micro'),
+      ]);
+
+      if (!macroInsight || !microInsight) {
+        throw new Error('Could not fetch or create active insight.');
+      }
+
+      await Promise.all([
+        Insight.updateInsight(macroInsight, nutrients),
+        Insight.updateInsight(microInsight, nutrients),
+      ]);
+
+      return true;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
   static async createMealLog(req, res) {
     try {
       const { recipeId, mealType, serving } = req.body;
+
+      const userId = req.user._id;
 
       if (!recipeId || !mealType || !serving) {
         return res.status(400).json({ error: 'Recipe ID, meal type and serving consumed are required' });
@@ -23,17 +50,19 @@ class MealLogController {
       const scaledNutrientAggregate = recipe.nutrientPerServing.map((nutrient) => ({
         name: nutrient.name,
         unit: nutrient.unit,
-        value: nutrient.value * serving,
+        value: roundToDecimal(nutrient.value * serving),
       }));
       console.log(`Meallog nutrient for this serving:\n${JSON.stringify(scaledNutrientAggregate, null, 2)}`);
 
       await MealLog.create({
-        userId: req.user._id,
+        userId,
         recipe: recipeId,
         mealType,
         serving,
         nutrientPerServing: scaledNutrientAggregate,
       });
+
+      await MealLogController._processMealLog(userId, scaledNutrientAggregate);
 
       return res.status(201).json({});
     } catch (err) {
@@ -50,27 +79,21 @@ class MealLogController {
 
       const query = { userId: req.user._id };
 
-      const pageNumber = parseInt(page, 10);
-      const limitNumber = parseInt(limit, 10);
+      const pageNumber = parseInt(page, 10) || 1;
+      const limitNumber = parseInt(limit, 10) || 10;
 
-      if (!startDate && !endDate) {
-        const today = new Date();
-
-        const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-        const endOfWeek = new Date(today.setDate(today.getDate() + 6));
-
-        query.updatedAt = { $gte: startOfWeek, $lte: endOfWeek };
-      } else {
-        query.updatedAt = {};
-        if (startDate) query.updatedAt.$gte = new Date(startDate);
-        if (endDate) query.updatedAt.$lte = new Date(endDate);
+      if (startDate || endDate) {
+        query.createdAt = {};
+        if (startDate) query.createdAt.$gte = new Date(startDate);
+        if (endDate) query.createdAt.$lte = new Date(endDate);
       }
 
       const mealLogs = await MealLog.find(query)
         .populate('recipe', 'name')
-        .sort({ updatedAt: -1 })
+        .sort({ createdAt: -1 })
         .skip((pageNumber - 1) * limitNumber)
-        .limit(limitNumber);
+        .limit(limitNumber)
+        .lean();
 
       const total = await MealLog.countDocuments(query);
 

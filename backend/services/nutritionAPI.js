@@ -1,5 +1,6 @@
 import axios from 'axios';
 import nutrients from '../utils/nutrients.js';
+import roundToDecimal from '../utils/conversions.js';
 
 const USDA_BASE_URL = 'https://api.nal.usda.gov/fdc/v1';
 
@@ -16,7 +17,7 @@ async function fetchNutrientData(foodName) {
       params: {
         api_key: USDA_API_KEY,
         query: foodName,
-        dataType: 'Foundation',
+        dataType: 'SR Legacy',
         pageSize: 1,
       },
     });
@@ -37,7 +38,7 @@ async function fetchNutrientData(foodName) {
         if (nutrientName) {
           return {
             name: nutrientName,
-            value: nutrient.value,
+            value: roundToDecimal(nutrient.value),
             unit: nutrient.unitName,
           };
         }

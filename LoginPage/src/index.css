@@ -15,7 +15,8 @@
 
 a {
   font-weight: 500;
-  color: blue;
+  color: green;
+  color: green;
   text-decoration: inherit;
 }
 a:hover {
@@ -31,7 +32,7 @@ body {
   min-width: 320px;
   min-height: 100vh; 
   background-color: #eee;
-  color: rgba(0, 0, 225);
+  color: rgba(0, 225, 0);
 }
 
 h1 {
@@ -47,18 +48,18 @@ form {
   width: 100%;
   max-width: 400px;
   padding: 20px;
-  background: #1e1e1e;
+  background: #eee;
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(225, 225, 225);
 }
 
-input {
+input { 
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid #eee;
+  border: 1px solid #1e1e1e; ;
   border-radius: 4px;
-  background-color: #333;
-  color: white;
+  background-color: #eee;
+  color: black
 }
 
 input::placeholder {
@@ -69,8 +70,8 @@ button {
   padding: 10px;
   font-size: 1rem;
   font-weight: bold;
-  color: blue;
-  background-color: blue;
+  color: green;
+  background-color: green;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -78,5 +79,5 @@ button {
 }
 
 button:hover {
-  background-color: blue;
+  background-color: green;
 }

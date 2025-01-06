@@ -1,6 +1,7 @@
 import Recipe from '../models/Recipe.js';
 import fetchNutrientData from '../services/nutritionAPI.js';
 import nutrientsConfig from '../utils/nutrients.js';
+import roundToDecimal from '../utils/conversions.js';
 // import findExistingComp from '../utils/comp-utils.js';
 
 class RecipeController {
@@ -37,7 +38,6 @@ class RecipeController {
               nutrients: [],
             };
           }
-          console.log(`raw ${compName} nutrient data:`, nutrientData);
 
           const nutrientArray = nutrientData.map((nutrient) => {
             const { name, value: amount, unit: nutrientUnit } = nutrient;
@@ -46,9 +46,11 @@ class RecipeController {
             return {
               name,
               unit: recommendedUnit,
-              value: (amount ?? 0) * (quantity / 100),
+              value: roundToDecimal((amount ?? 0) * (quantity / 100)),
             };
           });
+
+          console.log(`raw ${compName} nutrient data:`, JSON.stringify(nutrientArray, null, 2));
 
           return {
             name: compName,
@@ -68,7 +70,7 @@ class RecipeController {
 
       const savedRecipe = await newRecipe.save();
 
-      return res.status(200).json({
+      return res.status(201).json({
         id: savedRecipe._id,
         name: savedRecipe.name,
         servings: savedRecipe.servings,

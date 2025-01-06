@@ -1,4 +1,5 @@
 import React from 'react';
+import Header from './Header';
 
 const Signup = ({ switchToLogin }) => {
   return (
@@ -24,8 +25,8 @@ const Signup = ({ switchToLogin }) => {
 const styles = {
   container: { textAlign: 'center', padding: '30px' },
   input: { margin: '10px 0', padding: '10px', width: '80%' },
-  button: { padding: '10px 20px', background: 'blue', color: 'white' },
-  link: { color: 'blue', cursor: 'pointer' },
+  button: { padding: '10px 20px', background: 'green', color: 'white' },
+  link: { color: 'green', cursor: 'pointer' },
 };
 
 export default Signup;
