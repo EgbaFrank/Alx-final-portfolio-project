@@ -4,7 +4,7 @@ import User from '../models/User.js';
 class UserController {
   static async registerUser(req, res) {
     const {
-      firstname, lastname, email, password,
+      firstname, lastname, age, gender, email, password,
     } = req.body;
     if (!email || !email.includes('@')) {
       return res.status(401).json({ error: 'Missing or invalid email' });
@@ -12,6 +12,10 @@ class UserController {
 
     if (!password) {
       return res.status(401).json({ error: 'Missing password' });
+    }
+
+    if (!age) {
+      return res.status(401).json({ error: 'Missing age' });
     }
 
     try {
@@ -22,12 +26,12 @@ class UserController {
       }
 
       const user = new User({
-        firstname, lastname, email, password,
+        firstname, lastname, age, gender, email, password,
       });
 
       await user.save();
 
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
       return res.status(201).json({ token });
     } catch (err) {
@@ -47,7 +51,7 @@ class UserController {
       const user = await User.findOne({ email });
 
       if (!user) {
-        return res.status(500).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'User not found' });
       }
 
       const isMatch = await user.comparePassword(password);
@@ -56,7 +60,7 @@ class UserController {
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
       return res.status(200).json({ token });
     } catch (err) {
@@ -67,7 +71,7 @@ class UserController {
 
   static async getUser(req, res) {
     try {
-      const { user } = req; // populated by authMiddleware
+      const user = await req.user.populate('recipes', 'id name'); // populated by authMiddleware
 
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
@@ -98,7 +102,7 @@ class UserController {
         req.user._id,
         updateFields,
         { new: true, runValidators: true },
-      );
+      ).lean();
 
       if (!updatedUser) {
         return res.status(404).json({ error: 'User not found' });
