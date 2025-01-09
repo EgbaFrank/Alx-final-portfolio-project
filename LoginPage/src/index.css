@@ -1,0 +1,83 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.2;
+  font-weight: bolder;
+
+  color-scheme: light dark;
+  color: rgba(225, 225,225);
+  background-color: #eee;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: green;
+  color: green;
+  text-decoration: inherit;
+}
+a:hover {
+  color: white;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-width: 320px;
+  min-height: 100vh; 
+  background-color: #eee;
+  color: rgba(0, 225, 0);
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  margin-bottom: 0.5em;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  background: #eee;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(225, 225, 225);
+}
+
+input { 
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #1e1e1e;
+  border-radius: 4px;
+  background-color: #eee;
+  color: black
+}
+
+input::placeholder {
+  color: rgba(0, 225,0);
+}
+
+button {
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: green;
+  background-color: green;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: green;
+}

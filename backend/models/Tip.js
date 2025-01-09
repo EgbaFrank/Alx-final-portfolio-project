@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 const tipSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
   alertId: { type: mongoose.Schema.Types.ObjectId, ref: 'Alerts', required: true },
-  status: { type: String, enum: ['active', 'fulfilled'], default: 'active' },
+  nutrientName: { type: String, required: true },
+  active: { type: Boolean, default: true },
   message: { type: String, required: true },
 }, { timestamps: true });
 

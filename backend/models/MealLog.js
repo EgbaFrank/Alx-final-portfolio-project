@@ -2,25 +2,15 @@ import mongoose from 'mongoose';
 
 const mealLogSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true },
-  mealName: { type: String, required: true },
-  mealType: { type: String, enum: ['Breakfast', 'Lunch', 'Dinner', 'Snacks'], required: true },
-  portionSize: {
-    value: {
-      type: Number, min: 1, default: 100, required: true,
-    },
-    unit: {
-      type: String, enum: ['gram', 'cup', 'bowl'], default: 'gram', required: true,
-    },
-  },
-  nutrients: [
-    {
-      _id: false,
-      nutrientId: { type: Number, required: true },
-      nutrientName: { type: String, required: true },
-      unitName: { type: String, required: true },
-      value: { type: Number, required: true },
-    },
-  ],
+  mealType: { type: String, enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack'], required: true },
+  recipe: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipes', required: true },
+  serving: { type: Number, required: true },
+  nutrientPerServing: [{
+    _id: false,
+    name: { type: String, required: true },
+    unit: { type: String, required: true },
+    value: { type: Number, required: true },
+  }],
 }, { timestamps: true });
 
 mealLogSchema.set('toJSON', {
@@ -31,6 +21,6 @@ mealLogSchema.set('toJSON', {
   },
 });
 
-mealLogSchema.index({ userId: 1, updatedAt: -1 });
+mealLogSchema.index({ userId: 1, createdAt: -1 });
 
 export default mongoose.model('MealLogs', mealLogSchema);
