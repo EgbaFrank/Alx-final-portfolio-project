@@ -1,0 +1,12 @@
+{
+  "name": "alx-final-portfolio-project",
+  "version": "1.0.0",
+  "description": "**DailyNutri** is a web application designed to help users track their daily nutrient intake. By logging meals and analyzing nutrient data, the app provides insights into macro and micronutrient consumption, empowering users to make informed dietary decisions.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
