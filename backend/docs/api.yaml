@@ -567,7 +567,7 @@ paths:
             schema:
               type: object
               properties:
-                recipeID:
+                recipeId:
                   type: string
                   description: The ID of the recipe to be logged
                 mealType:
