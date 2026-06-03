@@ -11,10 +11,13 @@ import insightRoutes from "./routes/insightRoutes.js";
 import alertRoutes from "./routes/alertRoutes.js";
 import tipRoutes from "./routes/tipRoutes.js";
 import recipeRoutes from "./routes/recipeRoutes.js";
+import dns from "dns";
 
 dotenv.config();
 
 const swaggerDoc = YAML.load("./docs/api.yaml");
+
+dns.setDefaultResultOrder("ipv4first");
 
 const app = express();
 app.use(express.json());
