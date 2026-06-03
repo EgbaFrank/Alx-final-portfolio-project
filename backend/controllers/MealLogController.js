@@ -32,6 +32,7 @@ class MealLogController {
       const { recipeId, mealType, serving } = req.body;
 
       const userId = req.user._id;
+      console.log(`Creating meal log for user ${userId} with recipe ${recipeId}, meal type ${mealType}, and serving ${serving}`);
 
       if (!recipeId || !mealType || !serving) {
         return res.status(400).json({ error: 'Recipe ID, meal type and serving consumed are required' });

@@ -1,28 +1,38 @@
-import Recipe from '../models/Recipe.js';
-import fetchNutrientData from '../services/nutritionAPI.js';
-import nutrientsConfig from '../utils/nutrients.js';
-import roundToDecimal from '../utils/conversions.js';
+import Recipe from "../models/Recipe.js";
+import fetchNutrientData from "../services/nutritionAPI.js";
+import nutrientsConfig from "../utils/nutrients.js";
+import roundToDecimal from "../utils/conversions.js";
 // import findExistingComp from '../utils/comp-utils.js';
 
 class RecipeController {
   static async addRecipe(req, res) {
     const { name, servings, comps } = req.body;
 
-    if (!name || !comps || !Array.isArray(comps) || comps.length === 0 || !servings) {
-      return res.status(400).json({ error: 'Recipe name, servings and ingredients are required' });
+    if (
+      !name ||
+      !comps ||
+      !Array.isArray(comps) ||
+      comps.length === 0 ||
+      !servings
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Recipe name, servings and ingredients are required" });
     }
 
     if (!Number.isInteger(servings) || servings <= 0) {
-      return res.status(400).json({ error: 'Servings must be a positive integer' });
+      return res
+        .status(400)
+        .json({ error: "Servings must be a positive integer" });
     }
 
     try {
       const validatedComps = await Promise.all(
         comps.map(async (comp) => {
-          const { name: compName, quantity, unit = 'g' } = comp;
+          const { name: compName, quantity, unit = "g" } = comp;
 
           if (!compName || !quantity) {
-            throw new Error('Each ingredient must have a name and quantity');
+            throw new Error("Each ingredient must have a name and quantity");
           }
 
           const nutrientData = await fetchNutrientData(compName);
@@ -41,7 +51,8 @@ class RecipeController {
 
           const nutrientArray = nutrientData.map((nutrient) => {
             const { name, value: amount, unit: nutrientUnit } = nutrient;
-            const recommendedUnit = nutrientsConfig[name]?.recommended?.unit ?? nutrientUnit;
+            const recommendedUnit =
+              nutrientsConfig[name]?.recommended?.unit ?? nutrientUnit;
 
             return {
               name,
@@ -50,7 +61,10 @@ class RecipeController {
             };
           });
 
-          console.log(`raw ${compName} nutrient data:`, JSON.stringify(nutrientArray, null, 2));
+          console.log(
+            `raw ${compName} nutrient data:`,
+            JSON.stringify(nutrientArray, null, 2),
+          );
 
           return {
             name: compName,
@@ -77,7 +91,7 @@ class RecipeController {
         nutrientPerServing: savedRecipe.nutrientPerServing,
       });
     } catch (err) {
-      console.error(err);
+      console.error(`Error adding recipe: ${err.message}`);
       return res.status(400).json({ error: err.message });
     }
   }
@@ -89,12 +103,12 @@ class RecipeController {
       const recipeExists = await Recipe.findById(recipeId);
 
       if (!recipeExists) {
-        throw new Error('Invalid recipe ID. Recipe does not exist');
+        throw new Error("Invalid recipe ID. Recipe does not exist");
       }
       const { user } = req;
 
       if (user.recipes.includes(recipeId)) {
-        throw new Error('Recipe is already saved');
+        throw new Error("Recipe is already saved");
       }
 
       user.recipes.push(recipeId);
@@ -109,7 +123,7 @@ class RecipeController {
 
   static async getRecipes(req, res) {
     try {
-      const populatedUser = await req.user.populate('recipes');
+      const populatedUser = await req.user.populate("recipes");
 
       const simpleRecipes = populatedUser.recipes.map((recipe) => ({
         id: recipe._id,
