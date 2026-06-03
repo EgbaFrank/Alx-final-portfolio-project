@@ -65,7 +65,7 @@ paths:
                 - email
                 - password
       responses:
-        '201':
+        "201":
           description: User registered successfully
           content:
             application/json:
@@ -75,9 +75,9 @@ paths:
                   token:
                     type: string
                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        '401':
+        "401":
           description: Missing or invalid credentials
-        '400':
+        "400":
           description: User already exists.
       security: []
 
@@ -101,7 +101,7 @@ paths:
                 - email
                 - password
       responses:
-        '200':
+        "200":
           description: Authentication successful
           content:
             application/json:
@@ -111,9 +111,9 @@ paths:
                   token:
                     type: string
                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        '401':
+        "401":
           description: Missing or invalid credentials
-        '404':
+        "404":
           description: User not found
       security: []
 
@@ -125,7 +125,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Successfully retrieved user details.
           content:
             application/json:
@@ -170,7 +170,7 @@ paths:
                         name:
                           type: string
                           example: Mango Smoothie
-        '401':
+        "401":
           description: Unauthorized. Token missing or invalid.
           content:
             application/json:
@@ -181,7 +181,7 @@ paths:
                     type: string
                     example: Unauthorized. Bearer token required.
 
-    put:
+    patch:
       summary: Update user details.
       tags:
         - Users
@@ -198,10 +198,6 @@ paths:
                 lastname:
                   type: string
                   example: Doe
-                email:
-                  type: string
-                  format: email
-                  example: user@example.com
                 gender:
                   type: string
                   example: male
@@ -209,14 +205,14 @@ paths:
                   type: integer
                   example: 23
       responses:
-        '200':
+        "200":
           description: Successfully updated user details.
           content:
             application/json:
               schema:
                 type: object
                 example: {}
-        '401':
+        "401":
           description: Unauthorized. Token missing or invalid.
           content:
             application/json:
@@ -235,7 +231,7 @@ paths:
       tags:
         - Recipes
       security:
-        - bearerAuth: []  # Requires Authorization header with Bearer token
+        - bearerAuth: [] # Requires Authorization header with Bearer token
       requestBody:
         required: true
         content:
@@ -279,7 +275,7 @@ paths:
                     unit: G
                   - ...
       responses:
-        '201':
+        "201":
           description: Recipe created successfully
           content:
             application/json:
@@ -321,7 +317,7 @@ paths:
                           unit: MG
                           value: 12.5
                         - ...
-        '400':
+        "400":
           description: Invalid or missing data
           content:
             application/json:
@@ -331,7 +327,7 @@ paths:
                   error:
                     type: string
                     example: Invalid or missing data
-        '401':
+        "401":
           description: Unauthorized - Missing or invalid token
           content:
             application/json:
@@ -348,7 +344,7 @@ paths:
       tags:
         - Recipes
       security:
-        - bearerAuth: []  # Requires Authorization header with Bearer token
+        - bearerAuth: [] # Requires Authorization header with Bearer token
       parameters:
         - in: path
           name: recipeID
@@ -358,14 +354,14 @@ paths:
             example: 64e8c1a3f45b4d1234abcd56
           description: The unique ID of the recipe to be saved
       responses:
-        '201':
+        "201":
           description: Recipe successfully added to the saved list
           content:
             application/json:
               schema:
                 type: object
                 example: {}
-        '400':
+        "400":
           description: Invalid recipe ID or recipe already saved
           content:
             application/json:
@@ -375,7 +371,7 @@ paths:
                   error:
                     type: string
                     example: Invalid recipe ID or recipe already saved
-        '401':
+        "401":
           description: Unauthorized - Missing or invalid token
           content:
             application/json:
@@ -392,9 +388,9 @@ paths:
       tags:
         - Recipes
       security:
-        - bearerAuth: []  # Requires Authorization header with Bearer token
+        - bearerAuth: [] # Requires Authorization header with Bearer token
       responses:
-        '200':
+        "200":
           description: Successfully retrieved saved recipes
           content:
             application/json:
@@ -426,7 +422,7 @@ paths:
                           unit:
                             type: string
                             example: MG
-        '401':
+        "401":
           description: Unauthorized - Missing or invalid token
           content:
             application/json:
@@ -443,7 +439,7 @@ paths:
       tags:
         - Meal Logs
       security:
-        - bearerAuth: []  # Requires Authorization header with Bearer token
+        - bearerAuth: [] # Requires Authorization header with Bearer token
       parameters:
         - in: query
           name: startDate
@@ -472,7 +468,7 @@ paths:
             type: integer
           description: The number of logs per page
       responses:
-        '200':
+        "200":
           description: List of meal logs with pagination
           content:
             application/json:
@@ -533,7 +529,7 @@ paths:
                       pages:
                         type: integer
                         example: 10
-        '401':
+        "401":
           description: Unauthorized - Missing or invalid token
           content:
             application/json:
@@ -543,7 +539,7 @@ paths:
                   error:
                     type: string
                     example: Invalid or missing token
-        '500':
+        "500":
           description: Internal server error
           content:
             application/json:
@@ -559,7 +555,7 @@ paths:
       tags:
         - Meal Logs
       security:
-        - bearerAuth: []  # Requires Authorization header with Bearer token
+        - bearerAuth: [] # Requires Authorization header with Bearer token
       requestBody:
         required: true
         content:
@@ -588,14 +584,14 @@ paths:
                 - mealType
                 - serving
       responses:
-        '201':
+        "201":
           description: Meal successfully logged
           content:
             application/json:
               schema:
                 type: object
                 example: {}
-        '400':
+        "400":
           description: Invalid or missing request body value
           content:
             application/json:
@@ -605,7 +601,7 @@ paths:
                   error:
                     type: string
                     example: Invalid or missing request body value
-        '404':
+        "404":
           description: Recipe not found
           content:
             application/json:
@@ -615,7 +611,7 @@ paths:
                   error:
                     type: string
                     example: Recipe not found
-        '401':
+        "401":
           description: Unauthorized - Missing or invalid token
           content:
             application/json:
@@ -632,7 +628,7 @@ paths:
       tags:
         - Insights
       security:
-        - bearerAuth: []  # Requires Authorization header with Bearer token
+        - bearerAuth: [] # Requires Authorization header with Bearer token
       parameters:
         - name: startDate
           in: query
@@ -768,7 +764,7 @@ paths:
       tags:
         - Insights
       security:
-        - bearerAuth: []  # Requires Authorization header with Bearer token
+        - bearerAuth: [] # Requires Authorization header with Bearer token
       parameters:
         - name: type
           in: path
@@ -778,7 +774,7 @@ paths:
             type: string
             enum: [macro, micro]
       responses:
-        '200':
+        "200":
           description: Successful response with the user's latest insights
           content:
             application/json:
@@ -834,7 +830,7 @@ paths:
                         totalValue: 8
                         recommendedValue: 18
                         status: "deficient"
-        '400':
+        "400":
           description: Invalid type parameter
           content:
             application/json:
@@ -844,7 +840,7 @@ paths:
                   error:
                     type: string
                     example: "Type parameter must be specified as either 'Macro' or 'Micro'."
-        '404':
+        "404":
           description: No insights found
           content:
             application/json:
@@ -854,7 +850,7 @@ paths:
                   error:
                     type: string
                     example: "No insights found for specified type."
-        '500':
+        "500":
           description: Server error
           content:
             application/json:
@@ -871,7 +867,7 @@ paths:
       tags:
         - Alerts
       security:
-        - bearerAuth: []  # Requires Authorization header with Bearer token
+        - bearerAuth: [] # Requires Authorization header with Bearer token
       parameters:
         - name: active
           in: query
@@ -895,7 +891,7 @@ paths:
             type: integer
             example: 10
       responses:
-        '200':
+        "200":
           description: Successful response with a list of user's alerts
           content:
             application/json:
@@ -957,7 +953,7 @@ paths:
                       pages:
                         type: integer
                         example: 5
-        '400':
+        "400":
           description: Invalid page or limit values
           content:
             application/json:
@@ -967,7 +963,7 @@ paths:
                   error:
                     type: string
                     example: "Invalid page or limit values."
-        '500':
+        "500":
           description: Server error
           content:
             application/json:
@@ -984,7 +980,7 @@ paths:
       tags:
         - Tips
       security:
-        - bearerAuth: []  # Requires Authorization header with Bearer token
+        - bearerAuth: [] # Requires Authorization header with Bearer token
       parameters:
         - name: nutrient
           in: query
@@ -1015,7 +1011,7 @@ paths:
             type: integer
             example: 10
       responses:
-        '200':
+        "200":
           description: Successful response with a list of user's tips.
           content:
             application/json:
@@ -1065,7 +1061,7 @@ paths:
                       pages:
                         type: integer
                         example: 5
-        '500':
+        "500":
           description: Server error.
           content:
             application/json:
