@@ -34,15 +34,17 @@ app.use("/api/tips", tipRoutes);
 app.use("/api/recipes", recipeRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
-// Connect to mongoDB
-(async () => {
-  try {
-    await connectDB();
-  } catch (err) {
-    console.error(err.message);
-    process.exit(1);
-  }
-})();
+// Connect to mongoDB (skip automatic connect during tests)
+if (process.env.NODE_ENV !== "test") {
+  (async () => {
+    try {
+      await connectDB();
+    } catch (err) {
+      console.error(err.message);
+      process.exit(1);
+    }
+  })();
+}
 
 app.get("/", (req, res) => {
   res.send("DailyNutri Backend is running!");
