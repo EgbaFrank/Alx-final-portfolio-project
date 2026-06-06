@@ -57,7 +57,7 @@ class RecipeController {
             return {
               name,
               unit: recommendedUnit,
-              value: roundToDecimal((amount ?? 0) * (quantity / 100)),
+              value: roundToDecimal((amount ?? 0) * (quantity / 100)), // Assuming nutrient data is per 100g, adjust based on quantity
             };
           });
 

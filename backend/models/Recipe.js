@@ -6,7 +6,7 @@ const nutrientSchema = new mongoose.Schema({
   value: { type: Number, required: true },
 }, { _id: false });
 
-// comp: Component
+// comp: Component == ingredient in recipe
 const compSchema = new mongoose.Schema({
   name: { type: String, required: true },
   quantity: { type: Number, required: true, min: 1 },
