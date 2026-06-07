@@ -51,8 +51,8 @@ class RecipeController {
           }
 
           const [sourceName, nutrientData] = await fetchNutrientData(
-            compName,
-            compState,
+            compName.trim(),
+            compState.trim(),
           );
           // || await findExistingComp(compName);
 

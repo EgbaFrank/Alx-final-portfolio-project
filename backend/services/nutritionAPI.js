@@ -1,5 +1,6 @@
 import axios from "axios";
 import https from "https";
+import { compCache } from "../models/Recipe.js";
 import nutrients from "../utils/nutrients.js";
 import roundToDecimal from "../utils/conversions.js";
 import { rankFoods } from "../utils/comp-utils.js";
@@ -13,47 +14,58 @@ const usdaApi = axios.create({
   }),
 });
 
+async function searchUSDA(query) {
+  const { USDA_API_KEY } = process.env;
+
+  const payload = {
+    query,
+    dataType: ["Foundation", "SR Legacy"],
+    pageSize: 5,
+    requireAllWords: true,
+  };
+
+  const searchResponse = await usdaApi.post(
+    `/foods/search?api_key=${USDA_API_KEY}`,
+    payload,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  console.log(`USDA search response for "${query}":`, {
+    status: searchResponse.status,
+    data: searchResponse.data,
+    foodItems: searchResponse.data.foods,
+  });
+  return searchResponse.data.foods;
+}
+
 async function fetchNutrientData(foodName, state) {
+  if (!foodName || !state) {
+    throw new Error(
+      "Invalid ingredient provided, foodName and state are required",
+    );
+  }
+
+  const query = `${foodName}, ${state}`.toLowerCase();
+
+  // Check cache first
+  const cached = await compCache.findOne({ query });
+  if (cached) {
+    console.log(`Cache hit for "${query}"`);
+    return [cached.sourceName, cached.nutrients];
+  }
+
+  // Fetch from USDA if cache miss
   const nutrientIds = Object.values(nutrients).map(
     (nutrient) => nutrient.usdaId,
   );
-  const { USDA_API_KEY } = process.env;
 
   try {
-    if (!foodName || !state) {
-      throw new Error(
-        "Invalid ingredient provided, foodName and state are required",
-      );
-    }
-
-    const query = `${foodName}, ${state}`;
-
-    const payload = {
-      query,
-      dataType: ["Foundation", "SR Legacy"],
-      pageSize: 5,
-      requireAllWords: true,
-    };
-
-    const searchResponse = await usdaApi.post(
-      `/foods/search?api_key=${USDA_API_KEY}`,
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-
-    console.log(`USDA search response for "${query}":`, {
-      status: searchResponse.status,
-      data: searchResponse.data,
-      foodItems: searchResponse.data.foods,
-    });
-
-    const rankedFoods = searchResponse.data.foods?.sort((a, b) =>
-      rankFoods(a, b, foodName),
-    );
+    const USDAResults = await searchUSDA(query);
+    const rankedFoods = USDAResults.sort((a, b) => rankFoods(a, b, foodName));
 
     const foodItem = rankedFoods?.[0];
 
@@ -78,6 +90,15 @@ async function fetchNutrientData(foodName, state) {
         return null;
       })
       .filter(Boolean);
+
+    // Cache the result for future requests
+    await compCache.create({
+      query,
+      sourceName: foodItem.description,
+      sourceId: foodItem.fdcId,
+      nutrients: filteredNutrients,
+    });
+
     return [foodItem.description, filteredNutrients];
   } catch (err) {
     console.error("Error fetching food nutrients:");

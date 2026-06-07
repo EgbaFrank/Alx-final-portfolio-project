@@ -24,6 +24,38 @@ const compSchema = new mongoose.Schema(
   { _id: false },
 );
 
+const compCacheSchema = new mongoose.Schema(
+  {
+    query: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+
+    sourceName: {
+      type: String,
+      required: true,
+    },
+
+    sourceId: {
+      type: Number,
+      required: true,
+    },
+
+    nutrients: [nutrientSchema],
+
+    expiresAt: {
+      type: Date,
+      default: () => new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours from now
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
 const recipeSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -36,6 +68,9 @@ const recipeSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+// Enable automatic expiration of comp cache documents
+compCacheSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // aggregate recipe nutrients hook
 recipeSchema.pre("save", function aggregateNutrients(next) {
@@ -77,3 +112,4 @@ recipeSchema.set("toJSON", {
 });
 
 export default mongoose.model("Recipes", recipeSchema);
+export const compCache = mongoose.model("CompCache", compCacheSchema);
