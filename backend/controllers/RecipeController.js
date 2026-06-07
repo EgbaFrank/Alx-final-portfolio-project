@@ -1,4 +1,4 @@
-import Recipe from "../models/Recipe.js";
+import Recipe, { STATES } from "../models/Recipe.js";
 import fetchNutrientData from "../services/nutritionAPI.js";
 import nutrientsConfig from "../utils/nutrients.js";
 import roundToDecimal from "../utils/conversions.js";
@@ -29,20 +29,42 @@ class RecipeController {
     try {
       const validatedComps = await Promise.all(
         comps.map(async (comp) => {
-          const { name: compName, quantity, unit = "g" } = comp;
+          const {
+            name: compName,
+            state: compState,
+            quantity,
+            unit = "G",
+          } = comp;
 
-          if (!compName || !quantity) {
-            throw new Error("Each ingredient must have a name and quantity");
+          if (!compName || !compState || !quantity) {
+            throw new Error(
+              "Each ingredient must have a name, state and quantity",
+            );
           }
 
-          const nutrientData = await fetchNutrientData(compName);
+          if (!STATES.includes(compState)) {
+            throw new Error(
+              `Invalid state for ingredient "${compName}". Must be one of: ${STATES.join(
+                ", ",
+              )}`,
+            );
+          }
+
+          const [sourceName, nutrientData] = await fetchNutrientData(
+            compName,
+            compState,
+          );
           // || await findExistingComp(compName);
 
           if (!nutrientData || nutrientData.length === 0) {
-            console.warn(`No nutrient data found for ${compName}`);
+            console.warn(
+              `No nutrient data found for ${compName}, ${compState}`,
+            );
 
             return {
               name: compName,
+              sourceName,
+              state: compState,
               quantity,
               unit,
               nutrients: [],
@@ -62,12 +84,14 @@ class RecipeController {
           });
 
           console.log(
-            `raw ${compName} nutrient data:`,
+            `raw ${compName}, ${compState} nutrient data:`,
             JSON.stringify(nutrientArray, null, 2),
           );
 
           return {
             name: compName,
+            sourceName,
+            state: compState,
             quantity,
             unit,
             nutrients: nutrientArray,

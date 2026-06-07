@@ -2,6 +2,7 @@ import axios from "axios";
 import https from "https";
 import nutrients from "../utils/nutrients.js";
 import roundToDecimal from "../utils/conversions.js";
+import { rankFoods } from "../utils/comp-utils.js";
 
 const USDA_BASE_URL = "https://api.nal.usda.gov/fdc/v1";
 const usdaApi = axios.create({
@@ -12,30 +13,52 @@ const usdaApi = axios.create({
   }),
 });
 
-async function fetchNutrientData(foodName) {
+async function fetchNutrientData(foodName, state) {
   const nutrientIds = Object.values(nutrients).map(
     (nutrient) => nutrient.usdaId,
   );
   const { USDA_API_KEY } = process.env;
 
   try {
-    if (!foodName) {
-      throw new Error("Invalid ingredient provided");
+    if (!foodName || !state) {
+      throw new Error(
+        "Invalid ingredient provided, foodName and state are required",
+      );
     }
 
-    const searchResponse = await usdaApi.get("/foods/search", {
-      params: {
-        api_key: USDA_API_KEY,
-        query: foodName,
-        dataType: "SR Legacy",
-        pageSize: 1,
+    const query = `${foodName}, ${state}`;
+
+    const payload = {
+      query,
+      dataType: ["Foundation", "SR Legacy"],
+      pageSize: 5,
+      requireAllWords: true,
+    };
+
+    const searchResponse = await usdaApi.post(
+      `/foods/search?api_key=${USDA_API_KEY}`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
+    );
+
+    console.log(`USDA search response for "${query}":`, {
+      status: searchResponse.status,
+      data: searchResponse.data,
+      foodItems: searchResponse.data.foods,
     });
 
-    const foodItem = searchResponse.data.foods?.[0];
+    const rankedFoods = searchResponse.data.foods?.sort((a, b) =>
+      rankFoods(a, b, foodName),
+    );
+
+    const foodItem = rankedFoods?.[0];
 
     if (!foodItem) {
-      throw new Error(`Ingredient not found in the USDA database: ${foodName}`);
+      throw new Error(`Ingredient not found in the USDA database: ${query}`);
     }
 
     const filteredNutrients = foodItem.foodNutrients
@@ -55,7 +78,7 @@ async function fetchNutrientData(foodName) {
         return null;
       })
       .filter(Boolean);
-    return filteredNutrients;
+    return [foodItem.description, filteredNutrients];
   } catch (err) {
     console.error("Error fetching food nutrients:");
     console.error({

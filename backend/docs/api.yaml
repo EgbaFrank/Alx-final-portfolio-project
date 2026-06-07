@@ -257,6 +257,9 @@ paths:
                         type: number
                         format: float
                         example: 150
+                      state:
+                        type: string
+                        example: raw
                       unit:
                         type: string
                         example: G
@@ -266,14 +269,12 @@ paths:
                 comps:
                   - name: Banana
                     quantity: 150
+                    state: raw
                     unit: G
                   - name: Apple
                     quantity: 100
+                    state: raw
                     unit: G
-                  - name: Grapes
-                    quantity: 50
-                    unit: G
-                  - ...
       responses:
         "201":
           description: Recipe created successfully

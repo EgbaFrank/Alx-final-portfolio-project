@@ -1,31 +1,44 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const nutrientSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  unit: { type: String, required: true },
-  value: { type: Number, required: true },
-}, { _id: false });
+export const STATES = ["raw", "cooked", "fried", "boiled", "roasted", "dried"];
+
+const nutrientSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    unit: { type: String, required: true },
+    value: { type: Number, required: true },
+  },
+  { _id: false },
+);
 
 // comp: Component == ingredient in recipe
-const compSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  quantity: { type: Number, required: true, min: 1 },
-  unit: { type: String, required: true, default: 'G' },
-  nutrients: [nutrientSchema],
-}, { _id: false });
+const compSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    sourceName: { type: String }, // Original name from USDA FDB, if different from comp name
+    state: { type: String, enum: STATES, default: "raw" },
+    quantity: { type: Number, required: true, min: 1 },
+    unit: { type: String, required: true, default: "G" },
+    nutrients: [nutrientSchema],
+  },
+  { _id: false },
+);
 
-const recipeSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  notes: { type: String },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
-  servings: { type: Number, required: true },
-  comps: [compSchema],
-  nutrientPerServing: [nutrientSchema], // Nutrient Per Serving
-  isPublished: { type: Boolean, default: false },
-}, { timestamps: true });
+const recipeSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    notes: { type: String },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
+    servings: { type: Number, required: true },
+    comps: [compSchema],
+    nutrientPerServing: [nutrientSchema], // Nutrient Per Serving
+    isPublished: { type: Boolean, default: false },
+  },
+  { timestamps: true },
+);
 
 // aggregate recipe nutrients hook
-recipeSchema.pre('save', function aggregateNutrients(next) {
+recipeSchema.pre("save", function aggregateNutrients(next) {
   const totalNutrients = this.comps.reduce((acc, comp) => {
     comp.nutrients.forEach((nutrient) => {
       const existing = acc.find((n) => n.name === nutrient.name);
@@ -41,7 +54,9 @@ recipeSchema.pre('save', function aggregateNutrients(next) {
     });
     return acc;
   }, []);
-  console.log(`Recipe total nutrient: ${JSON.stringify(totalNutrients, null, 2)}`);
+  console.log(
+    `Recipe total nutrient: ${JSON.stringify(totalNutrients, null, 2)}`,
+  );
 
   this.nutrientPerServing = totalNutrients.map((nutrient) => ({
     name: nutrient.name,
@@ -53,7 +68,7 @@ recipeSchema.pre('save', function aggregateNutrients(next) {
 });
 
 // remove version from output
-recipeSchema.set('toJSON', {
+recipeSchema.set("toJSON", {
   transform: (doc, ret) => {
     const newRet = { ...ret };
     delete newRet.__v;
@@ -61,4 +76,4 @@ recipeSchema.set('toJSON', {
   },
 });
 
-export default mongoose.model('Recipes', recipeSchema);
+export default mongoose.model("Recipes", recipeSchema);
