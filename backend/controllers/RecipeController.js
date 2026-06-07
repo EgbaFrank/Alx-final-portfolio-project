@@ -5,6 +5,74 @@ import roundToDecimal from "../utils/conversions.js";
 // import findExistingComp from '../utils/comp-utils.js';
 
 class RecipeController {
+  static async getAllRecipes(req, res) {
+    console.log(`Fetching recipes for user ${req.user}...`);
+    try {
+      const recipes = await Recipe.find()
+        .select("id name servings")
+        .where({ isPublished: true }); // Return publicly published recipes
+      return res.status(200).json(recipes);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  static async getRecipeById(req, res) {
+    try {
+      const { recipeId } = req.params;
+
+      console.log(`Fetching recipe ${recipeId} for user ${req.user}...`);
+      const recipe = await Recipe.findById(recipeId)
+        .select("-comps.nutrients -comps.name -comps.state")
+        .populate("createdBy", "firstname lastname");
+
+      if (!recipe) {
+        return res.status(404).json({ error: "Recipe not found" });
+      }
+
+      // If the recipe is not published, only allow access if it's the creator or saved by the user
+      if (
+        !recipe.isPublished &&
+        !recipe.createdBy.equals(req.user._id) &&
+        !req.user.recipes.includes(recipeId)
+      ) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      return res.status(200).json(recipe);
+    } catch (err) {
+      console.error(err);
+      return res.status(400).json({ error: err.message });
+    }
+  }
+
+  static async publishRecipe(req, res) {
+    try {
+      const { recipeId } = req.params;
+
+      const recipe = await Recipe.findById(recipeId);
+
+      if (!recipe || recipe.isPublished) {
+        throw new Error(
+          "Invalid recipe ID. Recipe does not exist or is already published",
+        );
+      }
+
+      if (!recipe.createdBy.equals(req.user._id)) {
+        throw new Error("Unauthorized. You can only publish your own recipes");
+      }
+
+      recipe.isPublished = true;
+      await recipe.save();
+
+      return res.status(200).json({});
+    } catch (err) {
+      console.error(err);
+      return res.status(400).json({ error: err.message });
+    }
+  }
+
   static async addRecipe(req, res) {
     const { name, servings, comps } = req.body;
 

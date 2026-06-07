@@ -226,6 +226,55 @@ paths:
         - bearerAuth: []
 
   /recipes:
+    get:
+      summary: Get all published recipes
+      tags:
+        - Recipes
+      security:
+        - bearerAuth: [] # Requires Authorization header with Bearer token
+      responses:
+        "200":
+          description: A list of all published recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                      example: Fruit Salad
+                    servings:
+                      type: integer
+                      example: 2
+                    nutrientPerServing:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: Carbohydrate
+                          unit:
+                            type: string
+                            example: G
+                          value:
+                            type: number
+                            format: float
+                            example: 15.7
+                        example:
+                          - name: Carbohydrate
+                            unit: G
+                            value: 15.7
+                          - name: Protein
+                            unit: G
+                            value: 1.2
+                          - name: Vitamin C
+                            unit: MG
+                            value: 12.5
     post:
       summary: Add a recipe
       tags:
@@ -328,6 +377,117 @@ paths:
                   error:
                     type: string
                     example: Invalid or missing data
+        "401":
+          description: Unauthorized - Missing or invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or missing token
+
+  /recipes/{recipeID}:
+    get:
+      summary: Get details of a specific recipe
+      tags:
+        - Recipes
+      security:
+        - bearerAuth: [] # Requires Authorization header with Bearer token
+      parameters:
+        - in: path
+          name: recipeID
+          required: true
+          schema:
+            type: string
+          description: The unique ID of the recipe to retrieve
+      responses:
+        "200":
+          description: Successfully retrieved recipe details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: 64e8c1a3f45b4d1234abcd56
+                  name:
+                    type: string
+                    example: Fruit Salad
+                  servings:
+                    type: integer
+                    example: 2
+                  nutrientPerServing:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: Carbohydrate
+                        unit:
+                          type: string
+                          example: G
+                        value:
+                          type: number
+                          format: float
+                          example: 15.7
+                      example:
+                        - name: Carbohydrate
+                          unit: G
+                          value: 15.7
+                        - name: Protein
+                          unit: G
+                          value: 1.2
+                        - name: Vitamin C
+                          unit: MG
+                          value: 12.5
+                        - ...
+        "404":
+          description: Recipe not found with the given ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Recipe not found with the given ID
+
+    post:
+      summary: Publish a recipe
+      tags:
+        - Recipes
+      security:
+        - bearerAuth: [] # Requires Authorization header with Bearer token
+      parameters:
+        - in: path
+          name: recipeID
+          required: true
+          schema:
+            type: string
+            example: 64e8c1a3f45b4d1234abcd56
+          description: The unique ID of the recipe to be published
+      responses:
+        "200":
+          description: Recipe successfully published
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {}
+        "400":
+          description: Invalid recipe ID or recipe already published
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid recipe ID or recipe already published
         "401":
           description: Unauthorized - Missing or invalid token
           content:
