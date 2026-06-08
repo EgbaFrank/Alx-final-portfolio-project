@@ -1,18 +1,18 @@
-import MealLog from '../models/MealLog.js';
-import Recipe from '../models/Recipe.js';
-import Insight from './InsightController.js';
-import roundToDecimal from '../utils/conversions.js';
+import MealLog from "../models/MealLog.js";
+import Recipe from "../models/Recipe.js";
+import Insight from "./InsightController.js";
+import roundToDecimal from "../utils/conversions.js";
 
 class MealLogController {
   static async _processMealLog(userId, nutrients) {
     try {
       const [macroInsight, microInsight] = await Promise.all([
-        Insight.getActiveInsight(userId, 'Macro'),
-        Insight.getActiveInsight(userId, 'Micro'),
+        Insight.getActiveInsight(userId, "Macro"),
+        Insight.getActiveInsight(userId, "Micro"),
       ]);
 
       if (!macroInsight || !microInsight) {
-        throw new Error('Could not fetch or create active insight.');
+        throw new Error("Could not fetch or create active insight.");
       }
 
       await Promise.all([
@@ -32,35 +32,46 @@ class MealLogController {
       const { recipeId, mealType, serving } = req.body;
 
       const userId = req.user._id;
-      console.log(`Creating meal log for user ${userId} with recipe ${recipeId}, meal type ${mealType}, and serving ${serving}`);
+      console.log(
+        `Creating meal log for user ${userId} with recipe ${recipeId}, meal type ${mealType}, and serving ${serving}`,
+      );
 
       if (!recipeId || !mealType || !serving) {
-        return res.status(400).json({ error: 'Recipe ID, meal type and serving consumed are required' });
+        return res.status(400).json({
+          error: "Recipe ID, meal type and serving consumed are required",
+        });
       }
 
       if (Number.isNaN(serving) || serving <= 0) {
-        return res.status(400).json({ error: 'Serving consumed must be a positive number' });
+        return res
+          .status(400)
+          .json({ error: "Serving consumed must be a positive number" });
       }
 
       const recipe = await Recipe.findById(recipeId);
 
       if (!recipe) {
-        return res.status(404).json({ error: 'Recipe not found' });
+        return res.status(404).json({ error: "Recipe not found" });
       }
 
-      const scaledNutrientAggregate = recipe.nutrientPerServing.map((nutrient) => ({
-        name: nutrient.name,
-        unit: nutrient.unit,
-        value: roundToDecimal(nutrient.value * serving),
-      }));
-      console.log(`Meallog nutrient for this serving:\n${JSON.stringify(scaledNutrientAggregate, null, 2)}`);
+      const scaledNutrientAggregate = recipe.nutrientPerServing.map(
+        (nutrient) => ({
+          name: nutrient.name,
+          unit: nutrient.unit,
+          value: roundToDecimal(nutrient.value * serving),
+        }),
+      );
+      console.log(
+        `Meallog nutrient for this serving:\n${JSON.stringify(scaledNutrientAggregate, null, 2)}`,
+      );
 
       await MealLog.create({
         userId,
         recipe: recipeId,
+        recipeNameSnapshot: recipe.name,
         mealType,
         serving,
-        nutrientPerServing: scaledNutrientAggregate,
+        consumedNutrients: scaledNutrientAggregate,
       });
 
       await MealLogController._processMealLog(userId, scaledNutrientAggregate);
@@ -74,9 +85,7 @@ class MealLogController {
 
   static async getMealLogs(req, res) {
     try {
-      const {
-        startDate, endDate, page = 1, limit = 10,
-      } = req.query;
+      const { startDate, endDate, page = 1, limit = 10 } = req.query;
 
       const query = { userId: req.user._id };
 
@@ -90,7 +99,7 @@ class MealLogController {
       }
 
       const mealLogs = await MealLog.find(query)
-        .populate('recipe', 'name')
+        .populate("recipe", "name")
         .sort({ createdAt: -1 })
         .skip((pageNumber - 1) * limitNumber)
         .limit(limitNumber)
