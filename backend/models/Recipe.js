@@ -44,6 +44,11 @@ const compCacheSchema = new mongoose.Schema(
       required: true,
     },
 
+    sourceDataType: {
+      type: String,
+      required: true,
+    },
+
     nutrients: [nutrientSchema],
 
     expiresAt: {
@@ -54,6 +59,7 @@ const compCacheSchema = new mongoose.Schema(
   {
     timestamps: true,
   },
+  { _id: false },
 );
 
 const recipeSchema = new mongoose.Schema(

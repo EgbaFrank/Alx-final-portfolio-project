@@ -96,7 +96,8 @@ async function fetchNutrientData(foodName, state) {
       query,
       sourceName: foodItem.description,
       sourceId: foodItem.fdcId,
-      nutrients: filteredNutrients,
+      sourceDataType: foodItem.dataType,
+      nutrients: filteredNutrients, // Per 100g nutrient data
     });
 
     return [foodItem.description, filteredNutrients];
