@@ -8,7 +8,7 @@ import { rankFoods } from "../utils/comp-utils.js";
 const USDA_BASE_URL = "https://api.nal.usda.gov/fdc/v1";
 const usdaApi = axios.create({
   baseURL: "https://api.nal.usda.gov/fdc/v1",
-  timeout: 10000,
+  timeout: 25000,
   httpsAgent: new https.Agent({
     family: 4,
   }),
@@ -42,14 +42,14 @@ async function searchUSDA(query) {
   return searchResponse.data.foods;
 }
 
-async function fetchNutrientData(foodName, state) {
-  if (!foodName || !state) {
-    throw new Error(
-      "Invalid ingredient provided, foodName and state are required",
-    );
+async function fetchNutrientData(foodName, state = null) {
+  if (!foodName) {
+    throw new Error("Invalid ingredient provided, foodName is required");
   }
 
-  const query = `${foodName}, ${state}`.toLowerCase();
+  const query = state
+    ? `${foodName}, ${state}`.toLowerCase()
+    : foodName.toLowerCase();
 
   // Check cache first
   const cached = await compCache.findOne({ query });

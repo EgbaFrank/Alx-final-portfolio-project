@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-export const STATES = ["raw", "cooked", "fried", "boiled", "roasted", "dried"];
-
 const nutrientSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -15,8 +13,8 @@ const nutrientSchema = new mongoose.Schema(
 const compSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    sourceName: { type: String }, // Original name from USDA FDB, if different from comp name
-    state: { type: String, enum: STATES, default: "raw" },
+    sourceName: { type: String }, // Original name from USDA FDB
+    state: { type: String, default: null },
     quantity: { type: Number, required: true, min: 1 },
     unit: { type: String, required: true, default: "G" },
     nutrients: [nutrientSchema],

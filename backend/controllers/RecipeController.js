@@ -1,12 +1,10 @@
-import Recipe, { STATES } from "../models/Recipe.js";
+import Recipe from "../models/Recipe.js";
 import fetchNutrientData from "../services/nutritionAPI.js";
 import nutrientsConfig from "../utils/nutrients.js";
 import roundToDecimal from "../utils/conversions.js";
-// import findExistingComp from '../utils/comp-utils.js';
 
 class RecipeController {
   static async getAllRecipes(req, res) {
-    console.log(`Fetching recipes for user ${req.user}...`);
     try {
       const recipes = await Recipe.find()
         .select("id name servings")
@@ -22,7 +20,6 @@ class RecipeController {
     try {
       const { recipeId } = req.params;
 
-      console.log(`Fetching recipe ${recipeId} for user ${req.user}...`);
       const recipe = await Recipe.findById(recipeId)
         .select("-comps.nutrients -comps.name -comps.state")
         .populate("createdBy", "firstname lastname");
@@ -104,25 +101,20 @@ class RecipeController {
             unit = "G",
           } = comp;
 
-          if (!compName || !compState || !quantity) {
-            throw new Error(
-              "Each ingredient must have a name, state and quantity",
-            );
+          if (!compName || !quantity) {
+            throw new Error("Each ingredient must have a name and quantity");
           }
 
-          if (!STATES.includes(compState)) {
-            throw new Error(
-              `Invalid state for ingredient "${compName}". Must be one of: ${STATES.join(
-                ", ",
-              )}`,
-            );
+          if (!compState) {
+            compState = null;
+          } else {
+            compState = compState.trim();
           }
 
           const [sourceName, nutrientData] = await fetchNutrientData(
             compName.trim(),
-            compState.trim(),
+            compState,
           );
-          // || await findExistingComp(compName);
 
           if (!nutrientData || nutrientData.length === 0) {
             console.warn(
