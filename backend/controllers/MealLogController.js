@@ -4,7 +4,7 @@ import Insight from "./InsightController.js";
 import roundToDecimal from "../utils/conversions.js";
 
 class MealLogController {
-  static async _processMealLog(userId, nutrients) {
+  static async processMealLog(userId, nutrients) {
     try {
       const [macroInsight, microInsight] = await Promise.all([
         Insight.getActiveInsight(userId, "Macro"),
@@ -74,7 +74,7 @@ class MealLogController {
         consumedNutrients: scaledNutrientAggregate,
       });
 
-      await MealLogController._processMealLog(userId, scaledNutrientAggregate);
+      await MealLogController.processMealLog(userId, scaledNutrientAggregate);
 
       return res.status(201).json({});
     } catch (err) {
@@ -100,6 +100,7 @@ class MealLogController {
 
       const mealLogs = await MealLog.find(query)
         .populate("recipe", "name")
+        .select("-__v")
         .sort({ createdAt: -1 })
         .skip((pageNumber - 1) * limitNumber)
         .limit(limitNumber)

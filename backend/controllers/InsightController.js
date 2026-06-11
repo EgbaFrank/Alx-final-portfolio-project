@@ -1,21 +1,22 @@
-import Insight from '../models/Insight.js';
-import alertController from './AlertController.js';
-import nutrientsData from '../utils/nutrients.js';
-import determineStatus from '../utils/status-utils.js';
+import Insight from "../models/Insight.js";
+import alertController from "./AlertController.js";
+import nutrientsData from "../utils/nutrients.js";
+import determineStatus from "../utils/status-utils.js";
 
 class InsightController {
   static _calculateEndDate(type) {
     const now = new Date();
 
-    if (type === 'Macro') {
+    if (type === "Macro") {
       return new Date(now.setUTCHours(23, 59, 59, 999));
-    } if (type === 'Micro') {
+    }
+    if (type === "Micro") {
       const endOfWeek = new Date(now);
       endOfWeek.setDate(now.getDate() + (7 - now.getDay()));
       endOfWeek.setUTCHours(23, 59, 59, 999);
       return endOfWeek;
     }
-    throw new Error('Invalid type specified');
+    throw new Error("Invalid type specified");
   }
 
   static async getActiveInsight(userId, type) {
@@ -29,7 +30,7 @@ class InsightController {
       if (insight) {
         insight.active = false;
 
-        if (insight.type === 'Micro') {
+        if (insight.type === "Micro") {
           await alertController.generateAlerts(insight);
         }
 
@@ -42,11 +43,11 @@ class InsightController {
       for (const [nutrientName, nutrient] of Object.entries(nutrientsData)) {
         if (nutrient.recommended.type === type) {
           const amount = nutrient.recommended.amount ?? 0;
-          const recommendedValue = type === 'Micro' ? amount * 7 : amount;
+          const recommendedValue = type === "Micro" ? amount * 7 : amount;
           nutrients[nutrientName] = {
             totalValue: 0,
             recommendedValue,
-            status: 'deficient',
+            status: "deficient",
           };
         }
       }
@@ -67,7 +68,7 @@ class InsightController {
   static async updateInsight(insight, nutrientData) {
     try {
       if (!Array.isArray(nutrientData)) {
-        throw new Error('Nutrient Data must be an array.');
+        throw new Error("Nutrient Data must be an array.");
       }
 
       nutrientData.forEach((nutrient) => {
@@ -97,18 +98,27 @@ class InsightController {
   static async getLatestInsight(req, res) {
     const { type } = req.params;
 
-    if (!type || !['micro', 'macro'].includes(type)) {
-      return res.status(400).json({ error: 'Type parameter must be specified as either "macro" or "micro".' });
+    if (!type || !["micro", "macro"].includes(type)) {
+      return res
+        .status(400)
+        .json({
+          error:
+            'Type parameter must be specified as either "macro" or "micro".',
+        });
     }
 
     const capitalizeType = type[0].toUpperCase() + type.slice(1);
     const query = { userId: req.user._id, type: capitalizeType };
 
     try {
-      const insight = await Insight.findOne(query).sort({ createdAt: -1 }).lean();
+      const insight = await Insight.findOne(query)
+        .sort({ createdAt: -1 })
+        .lean();
 
       if (!insight) {
-        return res.status(404).json({ error: 'No insights found for specified type' });
+        return res
+          .status(404)
+          .json({ error: "No insights found for specified type" });
       }
 
       return res.status(200).json(insight);
@@ -119,14 +129,17 @@ class InsightController {
   }
 
   static async getInsights(req, res) {
-    const {
-      startDate, endDate, type, limit = 10, page = 1,
-    } = req.query;
+    const { startDate, endDate, type, limit = 10, page = 1 } = req.query;
 
     const userId = req.user._id;
 
-    if (!type || !['micro', 'macro'].includes(type)) {
-      return res.status(400).json({ error: 'Type property must be specified as either "macro" or "micro".' });
+    if (!type || !["micro", "macro"].includes(type)) {
+      return res
+        .status(400)
+        .json({
+          error:
+            'Type property must be specified as either "macro" or "micro".',
+        });
     }
 
     const capitalizeType = type[0].toUpperCase() + type.slice(1);
